@@ -1,8 +1,10 @@
+import React from "react";
+
 function Landing() {
   return (
-    <div>
+    <div style={{ padding: "40px" }}>
       <h1>DSS AHP</h1>
-      <p>Sistem Pendukung Keputusan menggunakan AHP</p>
+      <p>Landing Page OK</p>
     </div>
   );
 }

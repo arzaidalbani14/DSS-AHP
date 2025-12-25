@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 const useDecisionStore = create((set) => ({
+  // ========= STATE =========
   project: null,
 
   criteria: [],
@@ -15,7 +16,9 @@ const useDecisionStore = create((set) => ({
 
   finalResult: [],
 
-  // ---- actions ----
+  currentCriteriaIndex: 0,
+
+  // ========= ACTIONS =========
   setProject: (project) => set({ project }),
 
   setCriteria: (criteria) => set({ criteria }),
@@ -43,11 +46,9 @@ const useDecisionStore = create((set) => ({
     })),
 
   setFinalResult: (result) => set({ finalResult: result }),
+
+  setCurrentCriteriaIndex: (index) =>
+    set({ currentCriteriaIndex: index }),
 }));
 
 export default useDecisionStore;
-currentCriteriaIndex: 0,
-
-setCurrentCriteriaIndex: (index) =>
-  set({ currentCriteriaIndex: index }),
-
