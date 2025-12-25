@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import MainLayout from "../../components/layout/MainLayout";
 import PairwiseMatrix from "../../components/ahp/PairwiseMatrix";
 import ConsistencyBadge from "../../components/ahp/ConsistencyBadge";
 import ConsistencyDetail from "../../components/ahp/ConsistencyDetail";
@@ -34,24 +35,37 @@ function CompareCriteria() {
 
   // Hitung AHP setiap matriks berubah
   useEffect(() => {
-    if (pairwiseCriteria.length === 0) return;
+    const n = criteria.length;
+    if (n < 2) return;
+    if (pairwiseCriteria.length !== n) return;
+
+    // cek apakah user sudah mengisi perbandingan (bukan matriks identitas)
+    const hasComparison = pairwiseCriteria.some(
+      (row, i) => row.some((val, j) => i !== j && val !== 1)
+    );
+
+    if (!hasComparison) {
+      setCriteriaConsistency(null);
+      return;
+    }
 
     const normalized = normalizeMatrix(pairwiseCriteria);
     const weights = calculateWeights(normalized);
     const weightedSum = calculateWeightedSum(pairwiseCriteria, weights);
     const lambdaMax = calculateLambdaMax(weightedSum, weights);
-    const ci = calculateCI(lambdaMax, criteria.length);
-    const cr = calculateCR(ci, criteria.length);
+    const ci = calculateCI(lambdaMax, n);
+    const cr = calculateCR(ci, n);
 
     setCriteriaWeights(weights);
     setCriteriaConsistency({ lambdaMax, ci, cr });
-  }, [pairwiseCriteria]);
+  }, [pairwiseCriteria, criteria]);
+
 
   const isConsistent =
     criteriaConsistency && criteriaConsistency.cr <= 0.1;
 
   return (
-    <div>
+    <MainLayout title="Compare Criteria">
       <h2>Perbandingan Kriteria</h2>
 
       <PairwiseMatrix
@@ -82,7 +96,7 @@ function CompareCriteria() {
           </p>
         )}
       </div>
-    </div>
+    </MainLayout>
   );
 }
 

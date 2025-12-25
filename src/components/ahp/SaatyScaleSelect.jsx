@@ -1,3 +1,4 @@
+import React from "react";
 import { SAATY_SCALE } from "../../utils/constants";
 
 function SaatyScaleSelect({ value, onChange }) {

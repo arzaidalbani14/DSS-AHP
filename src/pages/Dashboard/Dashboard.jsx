@@ -1,5 +1,12 @@
+import React from "react";
+import MainLayout from "../../components/layout/MainLayout";
+
 function Dashboard() {
-  return <h1>Dashboard</h1>;
+  return (
+    <MainLayout title="Dashboard">
+      <p>Welcome to DSS AHP Dashboard</p>
+    </MainLayout>
+  );
 }
 
 export default Dashboard;

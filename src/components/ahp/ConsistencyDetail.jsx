@@ -1,3 +1,4 @@
+import React from "react";
 function ConsistencyDetail({ lambdaMax, ci, cr }) {
   if (cr === null) return null;
 

@@ -1,6 +1,16 @@
+import React from "react";
 import SaatyScaleSelect from "./SaatyScaleSelect";
 
 function PairwiseMatrix({ items, matrix, onChange }) {
+
+  if (
+    !matrix ||
+    matrix.length !== items.length ||
+    matrix.some(row => !row || row.length !== items.length)
+  ) {
+    return <p>Matriks belum siap.</p>;
+  }
+
   const handleChange = (i, j, value) => {
     const newMatrix = matrix.map((row) => [...row]);
 
@@ -32,11 +42,11 @@ function PairwiseMatrix({ items, matrix, onChange }) {
                   <strong>1</strong>
                 ) : i < j ? (
                   <SaatyScaleSelect
-                    value={matrix[i][j]}
+                    value={matrix[i]?.[j] ?? 1}
                     onChange={(val) => handleChange(i, j, val)}
                   />
                 ) : (
-                  <span>{matrix[i][j].toFixed(3)}</span>
+                  <span>{(matrix[i]?.[j] ?? 1).toFixed(3)}</span>
                 )}
               </td>
             ))}

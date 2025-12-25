@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
 import { aggregateResults } from "../../services/ahpService";
 
@@ -32,7 +33,7 @@ function ResultPage() {
   }, []);
 
   return (
-    <div>
+    <MainLayout title="Result">
       <h2>Hasil Akhir & Ranking</h2>
 
       {finalResult.length === 0 ? (
@@ -57,7 +58,7 @@ function ResultPage() {
           </tbody>
         </table>
       )}
-    </div>
+    </MainLayout>
   );
 }
 

@@ -1,5 +1,12 @@
+import React from "react";
+import MainLayout from "../../components/layout/MainLayout";
+
 function ProjectDetail() {
-  return <h1>Project Detail</h1>;
+  return (
+    <MainLayout title="Project Detail">
+      <p>Detail project dan ringkasan AHP</p>
+    </MainLayout>
+  );
 }
 
 export default ProjectDetail;

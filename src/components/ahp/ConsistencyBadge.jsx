@@ -1,3 +1,4 @@
+import React from "react";
 function ConsistencyBadge({ cr }) {
   if (cr === null) return null;
 

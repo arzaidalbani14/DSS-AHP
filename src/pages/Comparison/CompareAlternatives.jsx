@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import MainLayout from "../../components/layout/MainLayout";
 import PairwiseMatrix from "../../components/ahp/PairwiseMatrix";
 import useDecisionStore from "../../store/decisionStore";
 import { createInitialMatrix } from "../../utils/matrixUtils";
@@ -33,40 +34,63 @@ function CompareAlternatives() {
   useEffect(() => {
     if (!currentCriteria) return;
 
-    const existingMatrix =
-      pairwiseAlternatives[currentCriteria.id];
+    const n = alternatives.length;
+    if (n < 2) return;
 
-    if (!existingMatrix && alternatives.length) {
+    const existingMatrix = pairwiseAlternatives[currentCriteria.id];
+
+    if (
+      !existingMatrix ||
+      existingMatrix.length !== n ||
+      existingMatrix.some(row => !row || row.length !== n)
+    ) {
       setPairwiseAlternatives(
         currentCriteria.id,
-        createInitialMatrix(alternatives.length)
+        createInitialMatrix(n)
       );
     }
   }, [currentCriteria, alternatives]);
 
+
   if (!currentCriteria) {
-    return <p>Semua kriteria telah diproses.</p>;
+    return (
+      <MainLayout title="Compare Alternatives">
+        <p>Semua kriteria telah diproses.</p>
+      </MainLayout>
+    );
   }
 
   const matrix = pairwiseAlternatives[currentCriteria.id];
 
   const handleMatrixChange = (newMatrix) => {
-    setPairwiseAlternatives(currentCriteria.id, newMatrix);
+    const n = alternatives.length;
 
-    // Hitung bobot alternatif
+    // cek apakah user sudah mengisi perbandingan
+    const hasComparison = newMatrix.some(
+      (row, i) => row.some((val, j) => i !== j && val !== 1)
+    );
+
+    if (!hasComparison) {
+      setAlternativeWeights(currentCriteria.id, {
+        weights: [],
+        consistency: null,
+      });
+      return;
+    }
+
     const normalized = normalizeMatrix(newMatrix);
     const weights = calculateWeights(normalized);
 
-    // (opsional) konsistensi alternatif
     const weightedSum = calculateWeightedSum(newMatrix, weights);
     const lambdaMax = calculateLambdaMax(weightedSum, weights);
-    const ci = calculateCI(lambdaMax, alternatives.length);
-    const cr = calculateCR(ci, alternatives.length);
+    const ci = calculateCI(lambdaMax, n);
+    const cr = calculateCR(ci, n);
 
     setAlternativeWeights(currentCriteria.id, {
       weights,
       consistency: { lambdaMax, ci, cr },
     });
+
   };
 
   const handleNext = () => {
@@ -76,7 +100,7 @@ function CompareAlternatives() {
   const isLast = currentCriteriaIndex === criteria.length - 1;
 
   return (
-    <div>
+    <MainLayout title="Compare Alternatives">
       <h2>
         Perbandingan Alternatif –{" "}
         <strong>{currentCriteria.name}</strong>
@@ -95,7 +119,7 @@ function CompareAlternatives() {
           {isLast ? "Selesai" : "Lanjut Kriteria Berikutnya"}
         </button>
       </div>
-    </div>
+    </MainLayout>
   );
 }
 
