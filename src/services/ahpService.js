@@ -59,8 +59,11 @@ export function aggregateResults(
       const altWeightObj = alternativeWeights[crit.id];
       if (!altWeightObj) return;
 
-      const localWeight = altWeightObj.weights[altIndex];
+      const localWeight =
+        altWeightObj.weights?.[altIndex] ?? 0;
+
       score += criteriaWeights[critIndex] * localWeight;
+
     });
 
     return {
