@@ -31,10 +31,23 @@ function CompareCriteria() {
 
   // Inisialisasi matriks jika belum ada
   useEffect(() => {
-    if (criteria.length && pairwiseCriteria.length === 0) {
-      setPairwiseCriteria(createInitialMatrix(criteria.length));
+    const n = criteria.length;
+
+    if (n < 2) {
+      setPairwiseCriteria([]);
+      setCriteriaConsistency(null);
+      setCriteriaWeights([]);
+      return;
+    }
+
+    // reset matrix jika jumlah kriteria berubah
+    if (pairwiseCriteria.length !== n) {
+      setPairwiseCriteria(createInitialMatrix(n));
+      setCriteriaConsistency(null);
+      setCriteriaWeights([]);
     }
   }, [criteria]);
+
 
   // Hitung AHP setiap matriks berubah
   useEffect(() => {
