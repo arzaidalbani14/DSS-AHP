@@ -42,7 +42,7 @@ export function calculateCI(lambdaMax, n) {
 // CR
 export function calculateCR(ci, n) {
   const ri = RANDOM_INDEX[n];
-  if (!ri) return 0;
+  if (!ri || n < 3) return 0;
   return ci / ri;
 }
 
