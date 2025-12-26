@@ -3,6 +3,8 @@ import MainLayout from "../../components/layout/MainLayout";
 import PairwiseMatrix from "../../components/ahp/PairwiseMatrix";
 import useDecisionStore from "../../store/decisionStore";
 import { createInitialMatrix } from "../../utils/matrixUtils";
+import { useNavigate } from "react-router-dom";
+
 
 import {
   normalizeMatrix,
@@ -28,34 +30,52 @@ function CompareAlternatives() {
     setCurrentCriteriaIndex,
   } = useDecisionStore();
 
+  const criteriaCount = criteria.length;
+  const altCount = alternatives.length;
+  const navigate = useNavigate();
+
+
+  // Sinkronisasi index jika kriteria berubah
+  useEffect(() => {
+    if (currentCriteriaIndex >= criteriaCount) {
+      setCurrentCriteriaIndex(0);
+    }
+  }, [criteriaCount]);
+
   const currentCriteria = criteria[currentCriteriaIndex];
 
-  // Inisialisasi matriks alternatif per kriteria
+  // Inisialisasi / reset matrix per kriteria
   useEffect(() => {
-    if (!currentCriteria) return;
-
-    const n = alternatives.length;
-    if (n < 2) return;
+    if (!currentCriteria || altCount < 2) return;
 
     const existingMatrix = pairwiseAlternatives[currentCriteria.id];
 
     if (
       !existingMatrix ||
-      existingMatrix.length !== n ||
-      existingMatrix.some(row => !row || row.length !== n)
+      existingMatrix.length !== altCount ||
+      existingMatrix.some(row => row.length !== altCount)
     ) {
       setPairwiseAlternatives(
         currentCriteria.id,
-        createInitialMatrix(n)
+        createInitialMatrix(altCount)
       );
+
+      // reset bobot lama
+      setAlternativeWeights(currentCriteria.id, {
+        weights: [],
+        consistency: null,
+      });
     }
   }, [currentCriteria, alternatives]);
-
 
   if (!currentCriteria) {
     return (
       <MainLayout title="Compare Alternatives">
         <p>Semua kriteria telah diproses.</p>
+
+        <button onClick={() => setCurrentCriteriaIndex(0)}>
+          Ulangi dari Kriteria Pertama
+        </button>
       </MainLayout>
     );
   }
@@ -63,20 +83,10 @@ function CompareAlternatives() {
   const matrix = pairwiseAlternatives[currentCriteria.id];
 
   const handleMatrixChange = (newMatrix) => {
-    const n = alternatives.length;
+    // ✅ SIMPAN MATRIX DULU (BUG 1 FIX)
+    setPairwiseAlternatives(currentCriteria.id, newMatrix);
 
-    // cek apakah user sudah mengisi perbandingan
-    const hasComparison = newMatrix.some(
-      (row, i) => row.some((val, j) => i !== j && val !== 1)
-    );
-
-    if (!hasComparison) {
-      setAlternativeWeights(currentCriteria.id, {
-        weights: [],
-        consistency: null,
-      });
-      return;
-    }
+    const n = altCount;
 
     const normalized = normalizeMatrix(newMatrix);
     const weights = calculateWeights(normalized);
@@ -90,14 +100,26 @@ function CompareAlternatives() {
       weights,
       consistency: { lambdaMax, ci, cr },
     });
-
   };
 
   const handleNext = () => {
-    setCurrentCriteriaIndex(currentCriteriaIndex + 1);
+    if (currentCriteriaIndex < criteriaCount - 1) {
+      setCurrentCriteriaIndex(currentCriteriaIndex + 1);
+    } else {
+      //  semua kriteria selesai ke Result
+      navigate("/project/1/result");
+    }
   };
 
-  const isLast = currentCriteriaIndex === criteria.length - 1;
+
+  const handlePrev = () => {
+    if (currentCriteriaIndex > 0) {
+      setCurrentCriteriaIndex(currentCriteriaIndex - 1);
+    }
+  };
+
+  const isFirst = currentCriteriaIndex === 0;
+  const isLast = currentCriteriaIndex === criteriaCount - 1;
 
   return (
     <MainLayout title="Compare Alternatives">
@@ -115,7 +137,14 @@ function CompareAlternatives() {
       )}
 
       <div style={{ marginTop: "20px" }}>
-        <button onClick={handleNext}>
+        <button onClick={handlePrev} disabled={isFirst}>
+          Kriteria Sebelumnya
+        </button>
+
+        <button
+          onClick={handleNext}
+          style={{ marginLeft: "8px" }}
+        >
           {isLast ? "Selesai" : "Lanjut Kriteria Berikutnya"}
         </button>
       </div>
