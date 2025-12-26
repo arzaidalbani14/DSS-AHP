@@ -1,6 +1,7 @@
 import React from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import ProgressStepper from "../ahp/ProgressStepper";
 
 function MainLayout({ children, title }) {
   return (

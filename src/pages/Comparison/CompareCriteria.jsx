@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import MainLayout from "../../components/layout/MainLayout";
 import PairwiseMatrix from "../../components/ahp/PairwiseMatrix";
 import ConsistencyBadge from "../../components/ahp/ConsistencyBadge";
@@ -24,7 +25,9 @@ function CompareCriteria() {
     setCriteriaWeights,
     setCriteriaConsistency,
     criteriaConsistency,
-  } = useDecisionStore();
+  } = useDecisionStore(); 
+  const navigate = useNavigate();
+
 
   // Inisialisasi matriks jika belum ada
   useEffect(() => {
@@ -86,9 +89,12 @@ function CompareCriteria() {
       )}
 
       <div style={{ marginTop: "20px" }}>
-        <button disabled={!isConsistent}>
-          Lanjut ke Perbandingan Alternatif
-        </button>
+      <button
+        disabled={!isConsistent}
+        onClick={() => navigate("/project/1/alternatives")}
+      >
+        Lanjut ke Perbandingan Alternatif
+      </button>
 
         {!isConsistent && (
           <p style={{ color: "red", marginTop: "8px" }}>
