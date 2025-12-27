@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../../components/layout/MainLayout";
+import useDecisionStore from "../../store/decisionStore";
 
 function ProjectCreate() {
   const navigate = useNavigate();
+  const addProject = useDecisionStore((s) => s.addProject);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -29,6 +31,7 @@ function ProjectCreate() {
     };
 
     console.log("PROJECT CREATED:", newProject);
+    addProject(newProject);
 
     // nanti: simpan ke storage / backend
     // sekarang: langsung redirect

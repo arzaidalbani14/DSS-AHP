@@ -1,7 +1,29 @@
 import { create } from "zustand";
 
-const useDecisionStore = create((set) => ({
-  // ========= STATE =========
+const useDecisionStore = create((set, get) => ({
+  // ========= PROJECTS LIST =========
+  projects: [],
+
+  addProject: (project) =>
+    set((state) => ({
+      projects: [...state.projects, project],
+    })),
+
+  updateProject: (id, updates) =>
+    set((state) => ({
+      projects: state.projects.map((p) =>
+        p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString().slice(0, 10) } : p
+      ),
+    })),
+
+  deleteProject: (id) =>
+    set((state) => ({
+      projects: state.projects.filter((p) => p.id !== id),
+    })),
+
+  getProjectById: (id) => get().projects.find((p) => p.id === id),
+
+  // ========= CURRENT PROJECT STATE =========
   project: null,
 
   criteria: [],
