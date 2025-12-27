@@ -1,25 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../../components/layout/MainLayout";
+import useDecisionStore from "../../store/decisionStore";
 
 function Dashboard() {
   const navigate = useNavigate();
 
-  // ===== MOCK DATA (sementara, tanpa backend) =====
-  const [projects] = useState([
-    {
-      id: "1",
-      name: "Pemilihan Laptop",
-      status: "draft",
-      updatedAt: "2025-01-10",
-    },
-    {
-      id: "2",
-      name: "Pemilihan Supplier",
-      status: "progress",
-      updatedAt: "2025-01-12",
-    },
-  ]);
+  // Get projects from store
+  const projects = useDecisionStore((s) => s.projects);
+  const deleteProject = useDecisionStore((s) => s.deleteProject);
+
+  const handleDelete = (projectId, projectName) => {
+    if (window.confirm(`Hapus project "${projectName}"?`)) {
+      deleteProject(projectId);
+    }
+  };
 
   const renderStatus = (status) => {
     switch (status) {
@@ -110,19 +105,34 @@ function Dashboard() {
                 <td style={td}>{renderStatus(project.status)}</td>
                 <td style={td}>{project.updatedAt}</td>
                 <td style={td}>
-                  <button
-                    onClick={() => navigate(`/project/${project.id}`)}
-                    style={{
-                      padding: "6px 12px",
-                      borderRadius: "6px",
-                      border: "1px solid #2563eb",
-                      background: "transparent",
-                      color: "#2563eb",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Buka
-                  </button>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button
+                      onClick={() => navigate(`/project/${project.id}`)}
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: "6px",
+                        border: "1px solid #2563eb",
+                        background: "transparent",
+                        color: "#2563eb",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Buka
+                    </button>
+                    <button
+                      onClick={() => handleDelete(project.id, project.name)}
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: "6px",
+                        border: "1px solid #ef4444",
+                        background: "transparent",
+                        color: "#ef4444",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Hapus
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

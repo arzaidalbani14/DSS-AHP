@@ -42,6 +42,19 @@ function ProjectDetail() {
     );
   }
 
+  // Auto-calculate status based on AHP progress
+  const computeStatus = () => {
+    if (finalResult.length > 0) {
+      return "completed";
+    }
+    if (criteria.length > 0 || alternatives.length > 0 || criteriaWeights.length > 0) {
+      return "progress";
+    }
+    return "draft";
+  };
+
+  const projectStatus = computeStatus();
+
   // AHP Steps with status
   const steps = [
     {
@@ -87,8 +100,8 @@ function ProjectDetail() {
               {currentProject.description || "Tidak ada deskripsi"}
             </p>
           </div>
-          <span style={statusBadge(currentProject.status)}>
-            {renderStatus(currentProject.status)}
+          <span style={statusBadge(projectStatus)}>
+            {renderStatus(projectStatus)}
           </span>
         </div>
         <p style={{ fontSize: "14px", color: "#9ca3af", marginTop: "12px" }}>

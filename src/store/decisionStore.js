@@ -1,76 +1,84 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-const useDecisionStore = create((set, get) => ({
-  // ========= PROJECTS LIST =========
-  projects: [],
+const useDecisionStore = create(
+  persist(
+    (set, get) => ({
+      // ========= PROJECTS LIST =========
+      projects: [],
 
-  addProject: (project) =>
-    set((state) => ({
-      projects: [...state.projects, project],
-    })),
+      addProject: (project) =>
+        set((state) => ({
+          projects: [...state.projects, project],
+        })),
 
-  updateProject: (id, updates) =>
-    set((state) => ({
-      projects: state.projects.map((p) =>
-        p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString().slice(0, 10) } : p
-      ),
-    })),
+      updateProject: (id, updates) =>
+        set((state) => ({
+          projects: state.projects.map((p) =>
+            p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString().slice(0, 10) } : p
+          ),
+        })),
 
-  deleteProject: (id) =>
-    set((state) => ({
-      projects: state.projects.filter((p) => p.id !== id),
-    })),
+      deleteProject: (id) =>
+        set((state) => ({
+          projects: state.projects.filter((p) => p.id !== id),
+        })),
 
-  getProjectById: (id) => get().projects.find((p) => p.id === id),
+      getProjectById: (id) => get().projects.find((p) => p.id === id),
 
-  // ========= CURRENT PROJECT STATE =========
-  project: null,
+      // ========= CURRENT PROJECT STATE =========
+      project: null,
 
-  criteria: [],
-  alternatives: [],
+      criteria: [],
+      alternatives: [],
 
-  pairwiseCriteria: [],
-  criteriaWeights: [],
-  criteriaConsistency: null,
+      pairwiseCriteria: [],
+      criteriaWeights: [],
+      criteriaConsistency: null,
 
-  pairwiseAlternatives: {},
-  alternativeWeights: {},
+      pairwiseAlternatives: {},
+      alternativeWeights: {},
 
-  finalResult: [],
+      finalResult: [],
 
-  currentCriteriaIndex: 0,
+      currentCriteriaIndex: 0,
 
-  // ========= ACTIONS =========
-  setProject: (project) => set({ project }),
+      // ========= ACTIONS =========
+      setProject: (project) => set({ project }),
 
-  setCriteria: (criteria) => set({ criteria }),
-  setAlternatives: (alternatives) => set({ alternatives }),
+      setCriteria: (criteria) => set({ criteria }),
+      setAlternatives: (alternatives) => set({ alternatives }),
 
-  setPairwiseCriteria: (matrix) => set({ pairwiseCriteria: matrix }),
-  setCriteriaWeights: (weights) => set({ criteriaWeights: weights }),
-  setCriteriaConsistency: (consistency) =>
-    set({ criteriaConsistency: consistency }),
+      setPairwiseCriteria: (matrix) => set({ pairwiseCriteria: matrix }),
+      setCriteriaWeights: (weights) => set({ criteriaWeights: weights }),
+      setCriteriaConsistency: (consistency) =>
+        set({ criteriaConsistency: consistency }),
 
-  setPairwiseAlternatives: (criteriaId, matrix) =>
-    set((state) => ({
-      pairwiseAlternatives: {
-        ...state.pairwiseAlternatives,
-        [criteriaId]: matrix,
-      },
-    })),
+      setPairwiseAlternatives: (criteriaId, matrix) =>
+        set((state) => ({
+          pairwiseAlternatives: {
+            ...state.pairwiseAlternatives,
+            [criteriaId]: matrix,
+          },
+        })),
 
-  setAlternativeWeights: (criteriaId, weights) =>
-    set((state) => ({
-      alternativeWeights: {
-        ...state.alternativeWeights,
-        [criteriaId]: weights,
-      },
-    })),
+      setAlternativeWeights: (criteriaId, weights) =>
+        set((state) => ({
+          alternativeWeights: {
+            ...state.alternativeWeights,
+            [criteriaId]: weights,
+          },
+        })),
 
-  setFinalResult: (result) => set({ finalResult: result }),
+      setFinalResult: (result) => set({ finalResult: result }),
 
-  setCurrentCriteriaIndex: (index) =>
-    set({ currentCriteriaIndex: index }),
-}));
+      setCurrentCriteriaIndex: (index) =>
+        set({ currentCriteriaIndex: index }),
+    }),
+    {
+      name: "dss-ahp-storage", // localStorage key
+    }
+  )
+);
 
 export default useDecisionStore;
