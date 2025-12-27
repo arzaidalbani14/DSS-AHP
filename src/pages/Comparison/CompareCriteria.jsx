@@ -104,7 +104,8 @@ function CompareCriteria() {
       <div style={{ marginTop: "20px" }}>
       <button
         disabled={!isConsistent}
-        onClick={() => navigate("/project/1/alternatives")}
+        onClick={() => navigate("/project/1/compare-alternatives")}
+
       >
         Lanjut ke Perbandingan Alternatif
       </button>

@@ -17,20 +17,22 @@ function Sidebar() {
       enabled: true,
     },
     {
-      label: "Compare Criteria",
-      path: "/project/1/compare-criteria",
-      enabled: criteria.length >= 2,
-    },
-    {
       label: "Alternatives",
       path: "/project/1/alternatives",
       enabled: criteria.length >= 1,
     },
     {
+      label: "Compare Criteria",
+      path: "/project/1/compare-criteria",
+      enabled: criteria.length >= 2,
+    },
+    {
       label: "Compare Alternatives",
       path: "/project/1/compare-alternatives",
       enabled:
-        alternatives.length >= 2 && criteriaWeights.length > 0,
+        criteria.length >= 1 &&
+        alternatives.length >= 2 &&
+        criteriaWeights.length === criteria.length,
     },
     {
       label: "Result",
@@ -51,7 +53,14 @@ function Sidebar() {
       <h2 style={{ marginBottom: "24px" }}>DSS AHP</h2>
 
       {/* ===== GLOBAL MENU ===== */}
-      <nav style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
+      <nav
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "12px",
+          marginBottom: "20px",
+        }}
+      >
         <NavLink to="/dashboard" style={navStyle}>
           Dashboard
         </NavLink>
@@ -106,5 +115,3 @@ const disabledStyle = {
 };
 
 export default Sidebar;
-
-// lanjut perbaiki alternatives - belum jalan
