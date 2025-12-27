@@ -1,8 +1,10 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import useDecisionStore from "../../store/decisionStore";
 
 function Sidebar() {
+  const { id: projectId } = useParams();
+
   const {
     criteria,
     alternatives,
@@ -10,25 +12,33 @@ function Sidebar() {
     finalResult,
   } = useDecisionStore();
 
+  // Only show AHP menu if we're inside a project
+  const showAhpMenu = !!projectId;
+
   const ahpMenu = [
     {
+      label: "Overview",
+      path: `/project/${projectId}`,
+      enabled: true,
+    },
+    {
       label: "Criteria",
-      path: "/project/1/criteria",
+      path: `/project/${projectId}/criteria`,
       enabled: true,
     },
     {
       label: "Alternatives",
-      path: "/project/1/alternatives",
+      path: `/project/${projectId}/alternatives`,
       enabled: criteria.length >= 1,
     },
     {
       label: "Compare Criteria",
-      path: "/project/1/compare-criteria",
+      path: `/project/${projectId}/compare-criteria`,
       enabled: criteria.length >= 2,
     },
     {
       label: "Compare Alternatives",
-      path: "/project/1/compare-alternatives",
+      path: `/project/${projectId}/compare-alternatives`,
       enabled:
         criteria.length >= 1 &&
         alternatives.length >= 2 &&
@@ -36,7 +46,7 @@ function Sidebar() {
     },
     {
       label: "Result",
-      path: "/project/1/result",
+      path: `/project/${projectId}/result`,
       enabled: finalResult.length > 0,
     },
   ];
@@ -71,12 +81,15 @@ function Sidebar() {
 
       <hr style={{ borderColor: "#334155", margin: "16px 0" }} />
 
-      {/* ===== AHP FLOW ===== */}
+      {/* ===== AHP FLOW (always visible, disabled when no project) ===== */}
       <nav style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-        {ahpMenu.map((item) =>
-          item.enabled ? (
+        {ahpMenu.map((item) => {
+          // Item enabled only if inside project AND meets step requirements
+          const isEnabled = showAhpMenu && item.enabled;
+
+          return isEnabled ? (
             <NavLink
-              key={item.path}
+              key={item.label}
               to={item.path}
               style={navStyle}
             >
@@ -84,14 +97,14 @@ function Sidebar() {
             </NavLink>
           ) : (
             <div
-              key={item.path}
+              key={item.label}
               style={disabledStyle}
-              title="Lengkapi langkah sebelumnya terlebih dahulu"
+              title={!showAhpMenu ? "Pilih project terlebih dahulu" : "Lengkapi langkah sebelumnya"}
             >
               {item.label}
             </div>
-          )
-        )}
+          );
+        })}
       </nav>
     </aside>
   );
