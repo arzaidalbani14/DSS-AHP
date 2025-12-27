@@ -74,6 +74,21 @@ const useDecisionStore = create(
 
       setCurrentCriteriaIndex: (index) =>
         set({ currentCriteriaIndex: index }),
+
+      // Reset all AHP data (for new project)
+      resetAhpData: () =>
+        set({
+          project: null,
+          criteria: [],
+          alternatives: [],
+          pairwiseCriteria: [],
+          criteriaWeights: [],
+          criteriaConsistency: null,
+          pairwiseAlternatives: {},
+          alternativeWeights: {},
+          finalResult: [],
+          currentCriteriaIndex: 0,
+        }),
     }),
     {
       name: "dss-ahp-storage", // localStorage key

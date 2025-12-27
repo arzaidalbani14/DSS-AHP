@@ -9,6 +9,7 @@ function ProjectDetail() {
 
   const projects = useDecisionStore((s) => s.projects);
   const setProject = useDecisionStore((s) => s.setProject);
+  const updateProject = useDecisionStore((s) => s.updateProject);
   const criteria = useDecisionStore((s) => s.criteria);
   const alternatives = useDecisionStore((s) => s.alternatives);
   const criteriaWeights = useDecisionStore((s) => s.criteriaWeights);
@@ -18,12 +19,32 @@ function ProjectDetail() {
   // Find current project
   const currentProject = projects.find((p) => p.id === id);
 
+  // Auto-calculate status based on AHP progress
+  const computeStatus = () => {
+    if (finalResult.length > 0) {
+      return "completed";
+    }
+    if (criteria.length > 0 || alternatives.length > 0 || criteriaWeights.length > 0) {
+      return "progress";
+    }
+    return "draft";
+  };
+
+  const projectStatus = computeStatus();
+
   // Set as active project
   useEffect(() => {
     if (currentProject) {
       setProject(currentProject);
     }
   }, [currentProject, setProject]);
+
+  // Sync computed status to project store (so Dashboard shows correct status)
+  useEffect(() => {
+    if (currentProject && currentProject.status !== projectStatus) {
+      updateProject(id, { status: projectStatus });
+    }
+  }, [currentProject, projectStatus, updateProject, id]);
 
   // Not found state
   if (!currentProject) {
@@ -41,19 +62,6 @@ function ProjectDetail() {
       </MainLayout>
     );
   }
-
-  // Auto-calculate status based on AHP progress
-  const computeStatus = () => {
-    if (finalResult.length > 0) {
-      return "completed";
-    }
-    if (criteria.length > 0 || alternatives.length > 0 || criteriaWeights.length > 0) {
-      return "progress";
-    }
-    return "draft";
-  };
-
-  const projectStatus = computeStatus();
 
   // AHP Steps with status
   const steps = [

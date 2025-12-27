@@ -6,6 +6,7 @@ import useDecisionStore from "../../store/decisionStore";
 function ProjectCreate() {
   const navigate = useNavigate();
   const addProject = useDecisionStore((s) => s.addProject);
+  const resetAhpData = useDecisionStore((s) => s.resetAhpData);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -18,7 +19,7 @@ function ProjectCreate() {
       return;
     }
 
-    // ===== MOCK CREATE PROJECT =====
+    // ===== CREATE NEW PROJECT =====
     const now = new Date().toISOString().slice(0, 10);
 
     const newProject = {
@@ -29,6 +30,9 @@ function ProjectCreate() {
       createdAt: now,
       updatedAt: now,
     };
+
+    // Reset AHP data from previous project
+    resetAhpData();
 
     console.log("PROJECT CREATED:", newProject);
     addProject(newProject);
