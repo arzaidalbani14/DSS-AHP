@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { Link, NavLink, useParams } from "react-router-dom";
 import useDecisionStore from "../../store/decisionStore";
 
 function Sidebar() {
@@ -57,78 +57,101 @@ function Sidebar() {
   return (
     <aside
       style={{
-        width: "220px",
-        background: "#1e293b",
-        color: "#fff",
-        padding: "16px",
+        width: "250px", // Slightly wider for better readability
+        background: "#0f172a", // Slate 900
+        color: "#f8fafc",
+        display: "flex",
+        flexDirection: "column",
+        borderRight: "1px solid #1e293b",
+        height: "100vh",
+        position: "sticky",
+        top: 0,
       }}
     >
-      <h2 style={{ marginBottom: "24px" }}>DSS AHP</h2>
+      <div style={{ padding: "24px", borderBottom: "1px solid #1e293b" }}>
+        <Link to="/" style={{ textDecoration: "none" }}>
+          <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: "800", letterSpacing: "0.5px", color: "white" }}>
+            DSS <span style={{ color: "var(--primary-color)" }}>AHP</span>
+          </h2>
+        </Link>
+        <small style={{ color: "#64748b", fontSize: "0.75rem" }}>Decision Support</small>
+      </div>
 
-      {/* ===== GLOBAL MENU ===== */}
-      <nav
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "12px",
-          marginBottom: "20px",
-        }}
-      >
-        <NavLink to="/dashboard" style={navStyle}>
-          Dashboard
-        </NavLink>
-        <NavLink to="/project/new" style={navStyle}>
-          New Project
-        </NavLink>
-      </nav>
-
-      <hr style={{ borderColor: "#334155", margin: "16px 0" }} />
-
-      {/* ===== AHP FLOW (always visible, disabled when no project) ===== */}
-      <nav style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-        {ahpMenu.map((item) => {
-          // Item enabled only if inside project AND meets step requirements
-          const isEnabled = showAhpMenu && item.enabled;
-
-          return isEnabled ? (
-            <NavLink
-              key={item.label}
-              to={item.path}
-              end={item.end}
-              style={navStyle}
-            >
-              {item.label}
+      <div style={{ padding: "16px", flex: 1, overflowY: "auto" }}>
+        {/* ===== GLOBAL MENU ===== */}
+        <div style={{ marginBottom: "24px" }}>
+          <small style={{ color: "#475569", textTransform: "uppercase", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "1px", display: "block", marginBottom: "8px" }}>
+            Main
+          </small>
+          <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <NavLink to="/dashboard" style={navStyle}>
+              Dashboard
             </NavLink>
-          ) : (
-            <div
-              key={item.label}
-              style={disabledStyle}
-              title={!showAhpMenu ? "Pilih project terlebih dahulu" : "Lengkapi langkah sebelumnya"}
-            >
-              {item.label}
-            </div>
-          );
-        })}
-      </nav>
+            <NavLink to="/project/new" style={navStyle}>
+              New Project
+            </NavLink>
+          </nav>
+        </div>
+
+        {/* ===== AHP FLOW ===== */}
+        <div>
+          <small style={{ color: "#475569", textTransform: "uppercase", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "1px", display: "block", marginBottom: "8px" }}>
+            Project Workflow
+          </small>
+          <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            {ahpMenu.map((item) => {
+              const isEnabled = showAhpMenu && item.enabled;
+              return isEnabled ? (
+                <NavLink
+                  key={item.label}
+                  to={item.path}
+                  end={item.end}
+                  style={navStyle}
+                >
+                  {item.label}
+                </NavLink>
+              ) : (
+                <div
+                  key={item.label}
+                  style={disabledStyle}
+                  title={!showAhpMenu ? "Pilih project terlebih dahulu" : "Lengkapi langkah sebelumnya"}
+                >
+                  {item.label}
+                </div>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
+
+      {/* Footer / User Info could go here */}
+      <div style={{ padding: "16px", borderTop: "1px solid #1e293b", fontSize: "0.75rem", color: "#475569" }}>
+        &copy; 2025 DSS System
+      </div>
     </aside>
   );
 }
 
 const navStyle = ({ isActive }) => ({
-  color: isActive ? "#fff" : "#e5e7eb",
+  color: isActive ? "#ffffff" : "#94a3b8", // Slate 400 inactive
   textDecoration: "none",
-  fontWeight: isActive ? 600 : 400,
-  padding: "6px 8px",
+  fontWeight: isActive ? 500 : 400,
+  padding: "8px 12px",
   borderRadius: "6px",
-  backgroundColor: isActive ? "#2563eb" : "transparent",
+  backgroundColor: isActive ? "var(--primary-color)" : "transparent",
+  transition: "all 0.2s ease",
+  display: "block",
+  fontSize: "0.9rem",
+  marginBottom: "2px"
 });
 
 const disabledStyle = {
-  color: "#9ca3af",
-  padding: "6px 8px",
+  color: "#334155", // Slate 700 (darker, less visible)
+  padding: "8px 12px",
   borderRadius: "6px",
+  fontSize: "0.9rem",
   cursor: "not-allowed",
-  opacity: 0.6,
+  opacity: 0.5,
 };
 
 export default Sidebar;
