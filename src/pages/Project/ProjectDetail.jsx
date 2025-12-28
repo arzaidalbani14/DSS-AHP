@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Card, Badge, Row, Col, Button } from "react-bootstrap";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
 
@@ -20,10 +21,12 @@ function ProjectDetail() {
   }, [project, id, setCurrentProjectId]);
 
   // Sync computed status to project
+  const prevStatusRef = useRef(null);
   useEffect(() => {
     if (!project) return;
     const computedStatus = computeProjectStatus(id);
-    if (project.status !== computedStatus) {
+    if (project.status !== computedStatus && prevStatusRef.current !== computedStatus) {
+      prevStatusRef.current = computedStatus;
       updateProject(id, { status: computedStatus });
     }
   }, [project, id, computeProjectStatus, updateProject]);
@@ -32,15 +35,17 @@ function ProjectDetail() {
   if (!project) {
     return (
       <MainLayout title="Project Not Found">
-        <div style={notFoundStyle}>
-          <h2>Project Tidak Ditemukan</h2>
-          <p style={{ color: "#6b7280", marginBottom: "16px" }}>
-            Project dengan ID "{id}" tidak ada atau sudah dihapus.
-          </p>
-          <button onClick={() => navigate("/dashboard")} style={primaryButton}>
-            Kembali ke Dashboard
-          </button>
-        </div>
+        <Card className="text-center py-5">
+          <Card.Body>
+            <h4>Project Tidak Ditemukan</h4>
+            <p className="text-muted mb-3">
+              Project dengan ID "{id}" tidak ada atau sudah dihapus.
+            </p>
+            <Button variant="primary" onClick={() => navigate("/dashboard")}>
+              Kembali ke Dashboard
+            </Button>
+          </Card.Body>
+        </Card>
       </MainLayout>
     );
   }
@@ -52,36 +57,49 @@ function ProjectDetail() {
   const alternativeWeights = project.alternativeWeights || {};
   const finalResult = project.finalResult || [];
 
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "draft":
+        return <Badge bg="secondary">Draft</Badge>;
+      case "progress":
+        return <Badge bg="primary">In Progress</Badge>;
+      case "completed":
+        return <Badge bg="success">Completed</Badge>;
+      default:
+        return <Badge bg="light" text="dark">-</Badge>;
+    }
+  };
+
   // AHP Steps with status
   const steps = [
     {
       label: "1. Criteria",
       path: `/project/${id}/criteria`,
-      status: criteria.length > 0 ? "done" : "pending",
+      done: criteria.length > 0,
       desc: `${criteria.length} kriteria`,
     },
     {
       label: "2. Alternatives",
       path: `/project/${id}/alternatives`,
-      status: alternatives.length > 0 ? "done" : "pending",
+      done: alternatives.length > 0,
       desc: `${alternatives.length} alternatif`,
     },
     {
       label: "3. Compare Criteria",
       path: `/project/${id}/compare-criteria`,
-      status: criteriaWeights.length > 0 ? "done" : "pending",
+      done: criteriaWeights.length > 0,
       desc: criteriaWeights.length > 0 ? "Completed" : "Belum",
     },
     {
       label: "4. Compare Alternatives",
       path: `/project/${id}/compare-alternatives`,
-      status: Object.keys(alternativeWeights || {}).length > 0 ? "done" : "pending",
+      done: Object.keys(alternativeWeights || {}).length > 0,
       desc: "Per kriteria",
     },
     {
       label: "5. Result",
       path: `/project/${id}/result`,
-      status: finalResult.length > 0 ? "done" : "pending",
+      done: finalResult.length > 0,
       desc: finalResult.length > 0 ? "Ready" : "Belum",
     },
   ];
@@ -89,134 +107,50 @@ function ProjectDetail() {
   return (
     <MainLayout title={project.name}>
       {/* Project Info Card */}
-      <div style={cardStyle}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <div>
-            <h2 style={{ margin: 0 }}>{project.name}</h2>
-            <p style={{ color: "#6b7280", marginTop: "8px" }}>
-              {project.description || "Tidak ada deskripsi"}
-            </p>
+      <Card className="mb-4">
+        <Card.Body>
+          <div className="d-flex justify-content-between align-items-start">
+            <div>
+              <h3 className="mb-2">{project.name}</h3>
+              <p className="text-muted mb-0">
+                {project.description || "Tidak ada deskripsi"}
+              </p>
+            </div>
+            {getStatusBadge(project.status)}
           </div>
-          <span style={statusBadge(project.status)}>
-            {renderStatus(project.status)}
-          </span>
-        </div>
-        <p style={{ fontSize: "14px", color: "#9ca3af", marginTop: "12px" }}>
-          Dibuat: {project.createdAt} | Terakhir diubah: {project.updatedAt}
-        </p>
-      </div>
+          <small className="text-muted d-block mt-3">
+            Dibuat: {project.createdAt} | Terakhir diubah: {project.updatedAt}
+          </small>
+        </Card.Body>
+      </Card>
 
       {/* AHP Flow Steps */}
-      <h3 style={{ marginTop: "32px", marginBottom: "16px" }}>Langkah AHP</h3>
-      <div style={stepsGrid}>
+      <h5 className="mb-3">Langkah AHP</h5>
+      <Row className="g-3 mb-4">
         {steps.map((step) => (
-          <div
-            key={step.path}
-            onClick={() => navigate(step.path)}
-            style={stepCard(step.status)}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <strong>{step.label}</strong>
-              {step.status === "done" && <span style={checkMark}>✓</span>}
-            </div>
-            <span style={{ fontSize: "14px", color: "#6b7280", marginTop: "8px", display: "block" }}>
-              {step.desc}
-            </span>
-          </div>
+          <Col key={step.path} xs={12} sm={6} md={4} lg={3}>
+            <Card
+              className={`h-100 ${step.done ? 'border-success bg-success-subtle' : ''}`}
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate(step.path)}
+            >
+              <Card.Body>
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <strong>{step.label}</strong>
+                  {step.done && <span className="text-success">✓</span>}
+                </div>
+                <small className="text-muted">{step.desc}</small>
+              </Card.Body>
+            </Card>
+          </Col>
         ))}
-      </div>
+      </Row>
 
-      <div style={{ marginTop: "32px" }}>
-        <button onClick={() => navigate("/dashboard")} style={secondaryButton}>
-          ← Kembali ke Dashboard
-        </button>
-      </div>
+      <Button variant="outline-secondary" onClick={() => navigate("/dashboard")}>
+        ← Kembali ke Dashboard
+      </Button>
     </MainLayout>
   );
 }
-
-// Helper render status
-const renderStatus = (status) => {
-  switch (status) {
-    case "draft":
-      return "Draft";
-    case "progress":
-      return "In Progress";
-    case "completed":
-      return "Completed";
-    default:
-      return "-";
-  }
-};
-
-// Styles
-const notFoundStyle = {
-  padding: "32px",
-  textAlign: "center",
-  border: "1px dashed #d1d5db",
-  borderRadius: "8px",
-};
-
-const cardStyle = {
-  padding: "20px",
-  border: "1px solid #e5e7eb",
-  borderRadius: "8px",
-  background: "#fff",
-};
-
-const statusBadge = (status) => ({
-  padding: "4px 12px",
-  borderRadius: "9999px",
-  fontSize: "12px",
-  fontWeight: 600,
-  background:
-    status === "completed"
-      ? "#d1fae5"
-      : status === "progress"
-        ? "#dbeafe"
-        : "#f3f4f6",
-  color:
-    status === "completed"
-      ? "#065f46"
-      : status === "progress"
-        ? "#1e40af"
-        : "#374151",
-});
-
-const stepsGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-  gap: "16px",
-};
-
-const stepCard = (status) => ({
-  padding: "16px",
-  border: status === "done" ? "2px solid #10b981" : "1px solid #e5e7eb",
-  borderRadius: "8px",
-  background: status === "done" ? "#ecfdf5" : "#fff",
-  cursor: "pointer",
-});
-
-const checkMark = {
-  color: "#10b981",
-  fontWeight: "bold",
-};
-
-const primaryButton = {
-  padding: "10px 16px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#2563eb",
-  color: "#fff",
-  cursor: "pointer",
-};
-
-const secondaryButton = {
-  padding: "10px 16px",
-  borderRadius: "8px",
-  border: "1px solid #d1d5db",
-  background: "#fff",
-  cursor: "pointer",
-};
 
 export default ProjectDetail;

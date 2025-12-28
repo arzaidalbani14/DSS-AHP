@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { Container, Row, Col, Card, Button, Table, Badge } from "react-bootstrap";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
 
@@ -16,144 +17,88 @@ function Dashboard() {
     }
   };
 
-  const renderStatus = (status) => {
+  const getStatusBadge = (status) => {
     switch (status) {
       case "draft":
-        return "Draft";
+        return <Badge bg="secondary">Draft</Badge>;
       case "progress":
-        return "In Progress";
+        return <Badge bg="primary">In Progress</Badge>;
       case "completed":
-        return "Completed";
-      case "ready":
-        return "Ready";
+        return <Badge bg="success">Completed</Badge>;
       default:
-        return "-";
+        return <Badge bg="light" text="dark">-</Badge>;
     }
   };
 
   return (
     <MainLayout title="Dashboard">
-      {/* ===== HEADER ===== */}
-      <div style={{ marginBottom: "24px" }}>
-        <h2>Dashboard</h2>
-        <p style={{ color: "#6b7280" }}>
+      {/* Header */}
+      <div className="mb-4">
+        <h2 className="mb-1">Dashboard</h2>
+        <p className="text-muted">
           Kelola dan lanjutkan proses pengambilan keputusan
         </p>
       </div>
 
-      {/* ===== PRIMARY ACTION ===== */}
-      <div style={{ marginBottom: "24px" }}>
-        <button
-          onClick={() => navigate("/project/new")}
-          style={{
-            padding: "10px 16px",
-            borderRadius: "8px",
-            border: "none",
-            background: "#2563eb",
-            color: "#fff",
-            cursor: "pointer",
-          }}
-        >
+      {/* Action Button */}
+      <div className="mb-4">
+        <Button variant="primary" onClick={() => navigate("/project/new")}>
           + New Project
-        </button>
+        </Button>
       </div>
 
-      {/* ===== PROJECT LIST / EMPTY STATE ===== */}
+      {/* Project List / Empty State */}
       {projects.length === 0 ? (
-        <div
-          style={{
-            padding: "32px",
-            border: "1px dashed #d1d5db",
-            borderRadius: "8px",
-            textAlign: "center",
-            color: "#6b7280",
-          }}
-        >
-          <p>Belum ada project keputusan.</p>
-          <button
-            onClick={() => navigate("/project/new")}
-            style={{
-              marginTop: "16px",
-              padding: "10px 16px",
-              borderRadius: "8px",
-              border: "none",
-              background: "#2563eb",
-              color: "#fff",
-              cursor: "pointer",
-            }}
-          >
-            Buat Project Baru
-          </button>
-        </div>
+        <Card className="text-center py-5" style={{ borderStyle: "dashed" }}>
+          <Card.Body>
+            <p className="text-muted mb-3">Belum ada project keputusan.</p>
+            <Button variant="primary" onClick={() => navigate("/project/new")}>
+              Buat Project Baru
+            </Button>
+          </Card.Body>
+        </Card>
       ) : (
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-          }}
-        >
-          <thead>
-            <tr>
-              <th style={th}>Nama Project</th>
-              <th style={th}>Status</th>
-              <th style={th}>Terakhir Diubah</th>
-              <th style={th}>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((project) => (
-              <tr key={project.id}>
-                <td style={td}>{project.name}</td>
-                <td style={td}>{renderStatus(project.status)}</td>
-                <td style={td}>{project.updatedAt}</td>
-                <td style={td}>
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    <button
+        <Card>
+          <Table hover responsive className="mb-0">
+            <thead className="table-light">
+              <tr>
+                <th>Nama Project</th>
+                <th>Status</th>
+                <th>Terakhir Diubah</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projects.map((project) => (
+                <tr key={project.id}>
+                  <td className="align-middle">{project.name}</td>
+                  <td className="align-middle">{getStatusBadge(project.status)}</td>
+                  <td className="align-middle">{project.updatedAt}</td>
+                  <td className="align-middle">
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      className="me-2"
                       onClick={() => navigate(`/project/${project.id}`)}
-                      style={{
-                        padding: "6px 12px",
-                        borderRadius: "6px",
-                        border: "1px solid #2563eb",
-                        background: "transparent",
-                        color: "#2563eb",
-                        cursor: "pointer",
-                      }}
                     >
                       Buka
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
                       onClick={() => handleDelete(project.id, project.name)}
-                      style={{
-                        padding: "6px 12px",
-                        borderRadius: "6px",
-                        border: "1px solid #ef4444",
-                        background: "transparent",
-                        color: "#ef4444",
-                        cursor: "pointer",
-                      }}
                     >
                       Hapus
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Card>
       )}
     </MainLayout>
   );
 }
-
-const th = {
-  textAlign: "left",
-  padding: "8px",
-  borderBottom: "1px solid #e5e7eb",
-};
-
-const td = {
-  padding: "8px",
-  borderBottom: "1px solid #e5e7eb",
-};
 
 export default Dashboard;

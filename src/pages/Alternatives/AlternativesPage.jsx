@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
+import { Form, Button, Card, ListGroup, InputGroup } from "react-bootstrap";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
 
 function AlternativesPage() {
   const { id: projectId } = useParams();
 
-  // Get project-specific data
   const project = useDecisionStore((s) => s.getProjectById(projectId));
   const setProjectAlternatives = useDecisionStore((s) => s.setProjectAlternatives);
 
@@ -16,7 +16,8 @@ function AlternativesPage() {
   const [editingId, setEditingId] = useState(null);
   const [editingName, setEditingName] = useState("");
 
-  const handleAdd = () => {
+  const handleAdd = (e) => {
+    e.preventDefault();
     if (!name.trim()) return;
 
     const newAlternative = {
@@ -57,75 +58,78 @@ function AlternativesPage() {
   if (!project) {
     return (
       <MainLayout title="Alternatives">
-        <p>Project tidak ditemukan.</p>
+        <p className="text-muted">Project tidak ditemukan.</p>
       </MainLayout>
     );
   }
 
   return (
     <MainLayout title="Alternatives">
-      <h2>Daftar Alternatif</h2>
+      <h2 className="mb-4">Daftar Alternatif</h2>
 
-      {/* Tambah Alternatif */}
-      <div style={{ marginBottom: "16px" }}>
-        <input
-          type="text"
-          placeholder="Nama alternatif (contoh: Kos A)"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <button onClick={handleAdd} style={{ marginLeft: "8px" }}>
-          Tambah
-        </button>
-      </div>
+      {/* Add Alternative Form */}
+      <Card className="mb-4">
+        <Card.Body>
+          <Form onSubmit={handleAdd}>
+            <InputGroup>
+              <Form.Control
+                type="text"
+                placeholder="Nama alternatif (contoh: Laptop A)"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <Button variant="primary" type="submit">
+                Tambah
+              </Button>
+            </InputGroup>
+          </Form>
+        </Card.Body>
+      </Card>
 
-      {/* Daftar Alternatif */}
+      {/* Alternatives List */}
       {alternatives.length === 0 ? (
-        <p>Belum ada alternatif yang ditambahkan.</p>
+        <Card className="text-center py-4" style={{ borderStyle: "dashed" }}>
+          <Card.Body>
+            <p className="text-muted mb-0">Belum ada alternatif. Tambahkan alternatif di atas.</p>
+          </Card.Body>
+        </Card>
       ) : (
-        <ul>
-          {alternatives.map((alt) => (
-            <li key={alt.id} style={{ marginBottom: "8px" }}>
-              {editingId === alt.id ? (
-                <>
-                  <input
-                    type="text"
-                    value={editingName}
-                    onChange={(e) => setEditingName(e.target.value)}
-                  />
-                  <button
-                    onClick={() => handleEditSave(alt.id)}
-                    style={{ marginLeft: "6px" }}
-                  >
-                    Simpan
-                  </button>
-                  <button
-                    onClick={handleEditCancel}
-                    style={{ marginLeft: "4px" }}
-                  >
-                    Batal
-                  </button>
-                </>
-              ) : (
-                <>
-                  {alt.name}
-                  <button
-                    onClick={() => handleEditStart(alt)}
-                    style={{ marginLeft: "6px" }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(alt.id)}
-                    style={{ marginLeft: "4px" }}
-                  >
-                    Hapus
-                  </button>
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
+        <Card>
+          <ListGroup variant="flush">
+            {alternatives.map((alt, index) => (
+              <ListGroup.Item key={alt.id} className="d-flex align-items-center gap-2">
+                <span className="text-muted me-2">{index + 1}.</span>
+                {editingId === alt.id ? (
+                  <>
+                    <Form.Control
+                      size="sm"
+                      type="text"
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      className="flex-grow-1"
+                    />
+                    <Button size="sm" variant="success" onClick={() => handleEditSave(alt.id)}>
+                      Simpan
+                    </Button>
+                    <Button size="sm" variant="outline-secondary" onClick={handleEditCancel}>
+                      Batal
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <span className="flex-grow-1">{alt.name}</span>
+                    <Button size="sm" variant="outline-primary" onClick={() => handleEditStart(alt)}>
+                      Edit
+                    </Button>
+                    <Button size="sm" variant="outline-danger" onClick={() => handleDelete(alt.id)}>
+                      Hapus
+                    </Button>
+                  </>
+                )}
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        </Card>
       )}
     </MainLayout>
   );

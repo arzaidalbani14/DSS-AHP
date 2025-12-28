@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Card, Button, Alert } from "react-bootstrap";
 import MainLayout from "../../components/layout/MainLayout";
 import PairwiseMatrix from "../../components/ahp/PairwiseMatrix";
 import ConsistencyBadge from "../../components/ahp/ConsistencyBadge";
@@ -21,7 +22,6 @@ function CompareCriteria() {
   const { id: projectId } = useParams();
   const navigate = useNavigate();
 
-  // Get project-specific data
   const project = useDecisionStore((s) => s.getProjectById(projectId));
   const setProjectPairwiseCriteria = useDecisionStore((s) => s.setProjectPairwiseCriteria);
   const setProjectCriteriaWeights = useDecisionStore((s) => s.setProjectCriteriaWeights);
@@ -31,17 +31,14 @@ function CompareCriteria() {
   const pairwiseCriteria = project?.pairwiseCriteria || [];
   const criteriaConsistency = project?.criteriaConsistency || null;
 
-  // Track if we already initialized
   const initializedRef = useRef(false);
   const prevCriteriaLengthRef = useRef(criteria.length);
 
-  // Inisialisasi matriks jika belum ada atau jumlah kriteria berubah
   useEffect(() => {
     if (!project) return;
 
     const n = criteria.length;
 
-    // Reset ref jika kriteria berubah
     if (prevCriteriaLengthRef.current !== n) {
       initializedRef.current = false;
       prevCriteriaLengthRef.current = n;
@@ -54,21 +51,18 @@ function CompareCriteria() {
       return;
     }
 
-    // Inisialisasi matrix hanya sekali
     if (!initializedRef.current && pairwiseCriteria.length !== n) {
       initializedRef.current = true;
       setProjectPairwiseCriteria(projectId, createInitialMatrix(n));
     }
   }, [criteria.length, projectId, pairwiseCriteria.length]);
 
-  // Handler untuk perubahan matrix - hitung AHP di sini
   const handleMatrixChange = (newMatrix) => {
     setProjectPairwiseCriteria(projectId, newMatrix);
 
     const n = criteria.length;
     if (n < 2) return;
 
-    // cek apakah user sudah mengisi perbandingan (bukan matriks identitas)
     const hasComparison = newMatrix.some(
       (row, i) => row.some((val, j) => i !== j && val !== 1)
     );
@@ -93,7 +87,7 @@ function CompareCriteria() {
   if (!project) {
     return (
       <MainLayout title="Compare Criteria">
-        <p>Project tidak ditemukan.</p>
+        <p className="text-muted">Project tidak ditemukan.</p>
       </MainLayout>
     );
   }
@@ -102,41 +96,50 @@ function CompareCriteria() {
 
   return (
     <MainLayout title="Compare Criteria">
-      <h2>Perbandingan Kriteria</h2>
+      <h2 className="mb-4">Perbandingan Kriteria</h2>
 
       {criteria.length < 2 ? (
-        <p>Minimal 2 kriteria diperlukan untuk perbandingan.</p>
+        <Alert variant="warning">
+          Minimal 2 kriteria diperlukan untuk perbandingan.
+        </Alert>
       ) : (
         <>
-          <PairwiseMatrix
-            items={criteria}
-            matrix={pairwiseCriteria}
-            onChange={handleMatrixChange}
-          />
+          <Card className="mb-4">
+            <Card.Body>
+              <PairwiseMatrix
+                items={criteria}
+                matrix={pairwiseCriteria}
+                onChange={handleMatrixChange}
+              />
+            </Card.Body>
+          </Card>
 
           {criteriaConsistency && (
-            <>
-              <ConsistencyBadge cr={criteriaConsistency.cr} />
-              <ConsistencyDetail
-                lambdaMax={criteriaConsistency.lambdaMax}
-                ci={criteriaConsistency.ci}
-                cr={criteriaConsistency.cr}
-              />
-            </>
+            <Card className="mb-4">
+              <Card.Body>
+                <ConsistencyBadge cr={criteriaConsistency.cr} />
+                <ConsistencyDetail
+                  lambdaMax={criteriaConsistency.lambdaMax}
+                  ci={criteriaConsistency.ci}
+                  cr={criteriaConsistency.cr}
+                />
+              </Card.Body>
+            </Card>
           )}
 
-          <div style={{ marginTop: "20px" }}>
-            <button
+          <div className="d-flex gap-2 align-items-center">
+            <Button
+              variant="primary"
               disabled={!isConsistent}
               onClick={() => navigate(`/project/${projectId}/compare-alternatives`)}
             >
-              Lanjut ke Perbandingan Alternatif
-            </button>
+              Lanjut ke Perbandingan Alternatif →
+            </Button>
 
-            {!isConsistent && (
-              <p style={{ color: "red", marginTop: "8px" }}>
+            {!isConsistent && criteriaConsistency && (
+              <Alert variant="danger" className="mb-0 py-2 px-3">
                 Perbandingan belum konsisten. Silakan perbaiki nilai.
-              </p>
+              </Alert>
             )}
           </div>
         </>

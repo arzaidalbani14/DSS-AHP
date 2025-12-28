@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Card, Button, Alert } from "react-bootstrap";
 import MainLayout from "../../components/layout/MainLayout";
 import PairwiseMatrix from "../../components/ahp/PairwiseMatrix";
 import useDecisionStore from "../../store/decisionStore";
@@ -18,7 +19,6 @@ function CompareAlternatives() {
   const { id: projectId } = useParams();
   const navigate = useNavigate();
 
-  // Get project-specific data
   const project = useDecisionStore((s) => s.getProjectById(projectId));
   const setProjectPairwiseAlternatives = useDecisionStore((s) => s.setProjectPairwiseAlternatives);
   const setProjectAlternativeWeights = useDecisionStore((s) => s.setProjectAlternativeWeights);
@@ -33,7 +33,6 @@ function CompareAlternatives() {
   const criteriaCount = criteria.length;
   const altCount = alternatives.length;
 
-  // Sinkronisasi index jika kriteria berubah
   useEffect(() => {
     if (!project) return;
     if (currentCriteriaIndex >= criteriaCount && criteriaCount > 0) {
@@ -43,7 +42,6 @@ function CompareAlternatives() {
 
   const currentCriteria = criteria[currentCriteriaIndex];
 
-  // Inisialisasi / reset matrix per kriteria
   useEffect(() => {
     if (!project || !currentCriteria || altCount < 2) return;
 
@@ -55,8 +53,6 @@ function CompareAlternatives() {
       existingMatrix.some((row) => row.length !== altCount)
     ) {
       setProjectPairwiseAlternatives(projectId, currentCriteria.id, createInitialMatrix(altCount));
-
-      // reset bobot lama
       setProjectAlternativeWeights(projectId, currentCriteria.id, {
         weights: [],
         consistency: null,
@@ -67,7 +63,7 @@ function CompareAlternatives() {
   if (!project) {
     return (
       <MainLayout title="Compare Alternatives">
-        <p>Project tidak ditemukan.</p>
+        <p className="text-muted">Project tidak ditemukan.</p>
       </MainLayout>
     );
   }
@@ -75,11 +71,10 @@ function CompareAlternatives() {
   if (!currentCriteria) {
     return (
       <MainLayout title="Compare Alternatives">
-        <p>Semua kriteria telah diproses.</p>
-
-        <button onClick={() => updateProjectAhpData(projectId, "currentCriteriaIndex", 0)}>
+        <Alert variant="success">Semua kriteria telah diproses.</Alert>
+        <Button variant="outline-primary" onClick={() => updateProjectAhpData(projectId, "currentCriteriaIndex", 0)}>
           Ulangi dari Kriteria Pertama
-        </button>
+        </Button>
       </MainLayout>
     );
   }
@@ -87,7 +82,6 @@ function CompareAlternatives() {
   const matrix = pairwiseAlternatives[currentCriteria.id];
 
   const handleMatrixChange = (newMatrix) => {
-    // Simpan matrix
     setProjectPairwiseAlternatives(projectId, currentCriteria.id, newMatrix);
 
     const n = altCount;
@@ -110,7 +104,6 @@ function CompareAlternatives() {
     if (currentCriteriaIndex < criteriaCount - 1) {
       updateProjectAhpData(projectId, "currentCriteriaIndex", currentCriteriaIndex + 1);
     } else {
-      // semua kriteria selesai ke Result
       navigate(`/project/${projectId}/result`);
     }
   };
@@ -126,27 +119,37 @@ function CompareAlternatives() {
 
   return (
     <MainLayout title="Compare Alternatives">
-      <h2>
-        Perbandingan Alternatif – <strong>{currentCriteria.name}</strong>
-      </h2>
+      <h2 className="mb-2">Perbandingan Alternatif</h2>
+      <p className="text-muted mb-4">
+        Kriteria: <strong>{currentCriteria.name}</strong> ({currentCriteriaIndex + 1} dari {criteriaCount})
+      </p>
 
-      {matrix && (
-        <PairwiseMatrix
-          items={alternatives}
-          matrix={matrix}
-          onChange={handleMatrixChange}
-        />
+      {altCount < 2 ? (
+        <Alert variant="warning">Minimal 2 alternatif diperlukan.</Alert>
+      ) : (
+        <>
+          <Card className="mb-4">
+            <Card.Body>
+              {matrix && (
+                <PairwiseMatrix
+                  items={alternatives}
+                  matrix={matrix}
+                  onChange={handleMatrixChange}
+                />
+              )}
+            </Card.Body>
+          </Card>
+
+          <div className="d-flex gap-2">
+            <Button variant="outline-secondary" onClick={handlePrev} disabled={isFirst}>
+              ← Kriteria Sebelumnya
+            </Button>
+            <Button variant="primary" onClick={handleNext}>
+              {isLast ? "Selesai → Lihat Hasil" : "Lanjut Kriteria Berikutnya →"}
+            </Button>
+          </div>
+        </>
       )}
-
-      <div style={{ marginTop: "20px" }}>
-        <button onClick={handlePrev} disabled={isFirst}>
-          Kriteria Sebelumnya
-        </button>
-
-        <button onClick={handleNext} style={{ marginLeft: "8px" }}>
-          {isLast ? "Selesai" : "Lanjut Kriteria Berikutnya"}
-        </button>
-      </div>
     </MainLayout>
   );
 }

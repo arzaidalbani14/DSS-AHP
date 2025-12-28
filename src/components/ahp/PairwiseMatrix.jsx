@@ -1,4 +1,5 @@
 import React from "react";
+import { Table } from "react-bootstrap";
 import SaatyScaleSelect from "./SaatyScaleSelect";
 
 function PairwiseMatrix({ items, matrix, onChange }) {
@@ -8,7 +9,7 @@ function PairwiseMatrix({ items, matrix, onChange }) {
     matrix.length !== items.length ||
     matrix.some(row => !row || row.length !== items.length)
   ) {
-    return <p>Matriks belum siap.</p>;
+    return <p className="text-muted">Matriks belum siap.</p>;
   }
 
   const handleChange = (i, j, value) => {
@@ -21,39 +22,47 @@ function PairwiseMatrix({ items, matrix, onChange }) {
   };
 
   return (
-    <table style={{ borderCollapse: "collapse", width: "100%" }}>
-      <thead>
-        <tr>
-          <th></th>
-          {items.map((item) => (
-            <th key={item.id}>{item.name}</th>
-          ))}
-        </tr>
-      </thead>
-
-      <tbody>
-        {items.map((rowItem, i) => (
-          <tr key={rowItem.id}>
-            <td><strong>{rowItem.name}</strong></td>
-
-            {items.map((_, j) => (
-              <td key={j} style={{ textAlign: "center" }}>
-                {i === j ? (
-                  <strong>1</strong>
-                ) : i < j ? (
-                  <SaatyScaleSelect
-                    value={matrix[i]?.[j] ?? 1}
-                    onChange={(val) => handleChange(i, j, val)}
-                  />
-                ) : (
-                  <span>{(matrix[i]?.[j] ?? 1).toFixed(3)}</span>
-                )}
-              </td>
+    <div className="table-responsive">
+      <Table bordered hover size="sm" className="mb-0">
+        <thead className="table-light">
+          <tr>
+            <th style={{ minWidth: "120px" }}></th>
+            {items.map((item) => (
+              <th
+                key={item.id}
+                className="text-center"
+                style={{ minWidth: "130px" }}
+              >
+                {item.name}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+
+        <tbody>
+          {items.map((rowItem, i) => (
+            <tr key={rowItem.id}>
+              <td className="fw-bold bg-light">{rowItem.name}</td>
+
+              {items.map((_, j) => (
+                <td key={j} className="text-center align-middle">
+                  {i === j ? (
+                    <span className="text-muted fw-bold">1</span>
+                  ) : i < j ? (
+                    <SaatyScaleSelect
+                      value={matrix[i]?.[j] ?? 1}
+                      onChange={(val) => handleChange(i, j, val)}
+                    />
+                  ) : (
+                    <span className="text-secondary">{(matrix[i]?.[j] ?? 1).toFixed(3)}</span>
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </div>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Form, Button, Card } from "react-bootstrap";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
 
@@ -19,7 +20,6 @@ function ProjectCreate() {
       return;
     }
 
-    // ===== CREATE NEW PROJECT =====
     const now = new Date().toISOString().slice(0, 10);
     const projectId = Date.now().toString();
 
@@ -32,10 +32,7 @@ function ProjectCreate() {
       updatedAt: now,
     };
 
-    // Add project (AHP data is automatically included via createEmptyAhpData)
     addProject(newProject);
-
-    // Set as current project
     setCurrentProjectId(projectId);
 
     console.log("PROJECT CREATED:", newProject);
@@ -45,78 +42,53 @@ function ProjectCreate() {
   return (
     <MainLayout title="New Project">
       <div style={{ maxWidth: "600px" }}>
-        <h2>Buat Project Keputusan</h2>
-        <p style={{ color: "#6b7280", marginBottom: "24px" }}>
+        <h2 className="mb-2">Buat Project Keputusan</h2>
+        <p className="text-muted mb-4">
           Tentukan masalah keputusan yang akan dianalisis menggunakan AHP
         </p>
 
-        <form onSubmit={handleSubmit}>
-          {/* ===== NAMA PROJECT ===== */}
-          <div style={{ marginBottom: "16px" }}>
-            <label>Nama Project *</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Contoh: Pemilihan Laptop"
-              style={inputStyle}
-            />
-          </div>
+        <Card>
+          <Card.Body>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group className="mb-3">
+                <Form.Label>Nama Project *</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Contoh: Pemilihan Laptop"
+                />
+              </Form.Group>
 
-          {/* ===== DESKRIPSI ===== */}
-          <div style={{ marginBottom: "24px" }}>
-            <label>Deskripsi (opsional)</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Jelaskan singkat tujuan keputusan"
-              rows={4}
-              style={inputStyle}
-            />
-          </div>
+              <Form.Group className="mb-4">
+                <Form.Label>Deskripsi (opsional)</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Jelaskan singkat tujuan keputusan"
+                />
+              </Form.Group>
 
-          {/* ===== ACTIONS ===== */}
-          <div style={{ display: "flex", gap: "12px" }}>
-            <button type="submit" style={primaryButton}>
-              Buat Project
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/dashboard")}
-              style={secondaryButton}
-            >
-              Batal
-            </button>
-          </div>
-        </form>
+              <div className="d-flex gap-2">
+                <Button variant="primary" type="submit">
+                  Buat Project
+                </Button>
+                <Button
+                  variant="outline-secondary"
+                  type="button"
+                  onClick={() => navigate("/dashboard")}
+                >
+                  Batal
+                </Button>
+              </div>
+            </Form>
+          </Card.Body>
+        </Card>
       </div>
     </MainLayout>
   );
 }
-
-const inputStyle = {
-  width: "100%",
-  padding: "10px",
-  marginTop: "6px",
-  borderRadius: "6px",
-  border: "1px solid #d1d5db",
-};
-
-const primaryButton = {
-  padding: "10px 16px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#2563eb",
-  color: "#fff",
-  cursor: "pointer",
-};
-
-const secondaryButton = {
-  padding: "10px 16px",
-  borderRadius: "8px",
-  border: "1px solid #d1d5db",
-  background: "#fff",
-  cursor: "pointer",
-};
 
 export default ProjectCreate;
