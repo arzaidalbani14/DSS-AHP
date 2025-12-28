@@ -10,6 +10,8 @@ function ResultPage() {
 
   const project = useDecisionStore((s) => s.getProjectById(projectId));
   const setProjectFinalResult = useDecisionStore((s) => s.setProjectFinalResult);
+  const computeProjectStatus = useDecisionStore((s) => s.computeProjectStatus);
+  const updateProject = useDecisionStore((s) => s.updateProject);
 
   const criteria = project?.criteria || [];
   const alternatives = project?.alternatives || [];
@@ -48,7 +50,7 @@ function ResultPage() {
     );
   }, [criteria, alternatives, criteriaWeights, alternativeWeights, project]);
 
-  // Save result to store
+  // Save result to store and sync status
   const prevResultRef = useRef(null);
   useEffect(() => {
     if (!project) return;
@@ -59,6 +61,14 @@ function ResultPage() {
     if (resultChanged && storeNeedsUpdate && computedResult.length > 0) {
       prevResultRef.current = computedResult;
       setProjectFinalResult(projectId, computedResult);
+
+      // Sync status to project after saving result
+      setTimeout(() => {
+        const newStatus = computeProjectStatus(projectId);
+        if (project.status !== newStatus) {
+          updateProject(projectId, { status: newStatus });
+        }
+      }, 100);
     }
   }, [computedResult]);
 

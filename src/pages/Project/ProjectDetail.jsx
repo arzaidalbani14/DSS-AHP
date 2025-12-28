@@ -70,36 +70,47 @@ function ProjectDetail() {
     }
   };
 
-  // AHP Steps with status
+  // AHP Steps with status and prerequisites
+  // "done" = has valid data AND prerequisites are met
   const steps = [
     {
       label: "1. Criteria",
       path: `/project/${id}/criteria`,
       done: criteria.length > 0,
+      enabled: true, // Always accessible
       desc: `${criteria.length} kriteria`,
     },
     {
       label: "2. Alternatives",
       path: `/project/${id}/alternatives`,
-      done: alternatives.length > 0,
+      done: criteria.length >= 1 && alternatives.length > 0, // Done only if criteria exists
+      enabled: criteria.length >= 1,
       desc: `${alternatives.length} alternatif`,
     },
     {
       label: "3. Compare Criteria",
       path: `/project/${id}/compare-criteria`,
-      done: criteriaWeights.length > 0,
-      desc: criteriaWeights.length > 0 ? "Completed" : "Belum",
+      done: criteria.length >= 2 && criteriaWeights.length > 0 && criteriaWeights.length === criteria.length,
+      enabled: criteria.length >= 2,
+      desc: (criteria.length >= 2 && criteriaWeights.length === criteria.length) ? "Completed" : "Belum",
     },
     {
       label: "4. Compare Alternatives",
       path: `/project/${id}/compare-alternatives`,
-      done: Object.keys(alternativeWeights || {}).length > 0,
+      done: criteria.length >= 1 && alternatives.length >= 2 && criteriaWeights.length === criteria.length && Object.keys(alternativeWeights || {}).length > 0,
+      enabled: criteria.length >= 1 && alternatives.length >= 2 && criteriaWeights.length === criteria.length,
       desc: "Per kriteria",
     },
     {
       label: "5. Result",
       path: `/project/${id}/result`,
-      done: finalResult.length > 0,
+      done: criteria.length >= 1 && alternatives.length >= 2 && finalResult.length > 0,
+      enabled: (
+        criteria.length >= 1 &&
+        alternatives.length >= 2 &&
+        criteriaWeights.length === criteria.length &&
+        Object.keys(alternativeWeights || {}).length > 0
+      ) || finalResult.length > 0,
       desc: finalResult.length > 0 ? "Ready" : "Belum",
     },
   ];
@@ -130,14 +141,15 @@ function ProjectDetail() {
         {steps.map((step) => (
           <Col key={step.path} xs={12} sm={6} md={4} lg={3}>
             <Card
-              className={`h-100 ${step.done ? 'border-success bg-success-subtle' : ''}`}
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate(step.path)}
+              className={`h-100 ${step.done ? 'border-success bg-success-subtle' : ''} ${!step.enabled ? 'opacity-50' : ''}`}
+              style={{ cursor: step.enabled ? "pointer" : "not-allowed" }}
+              onClick={() => step.enabled && navigate(step.path)}
             >
               <Card.Body>
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <strong>{step.label}</strong>
                   {step.done && <span className="text-success">✓</span>}
+                  {!step.enabled && <span className="text-muted">🔒</span>}
                 </div>
                 <small className="text-muted">{step.desc}</small>
               </Card.Body>

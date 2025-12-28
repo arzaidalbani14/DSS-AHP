@@ -72,12 +72,63 @@ const useDecisionStore = create(
           ),
         })),
 
-      // Specific actions for convenience
-      setProjectCriteria: (projectId, criteria) =>
-        get().updateProjectAhpData(projectId, "criteria", criteria),
+      // Specific actions for convenience - with cascade reset
+      setProjectCriteria: (projectId, criteria) => {
+        const project = get().getProjectById(projectId);
+        const oldCriteriaCount = project?.criteria?.length || 0;
+        const newCriteriaCount = criteria.length;
 
-      setProjectAlternatives: (projectId, alternatives) =>
-        get().updateProjectAhpData(projectId, "alternatives", alternatives),
+        // If criteria changed significantly, reset dependent data
+        if (newCriteriaCount !== oldCriteriaCount || newCriteriaCount === 0) {
+          set((state) => ({
+            projects: state.projects.map((p) =>
+              p.id === projectId
+                ? {
+                  ...p,
+                  criteria,
+                  pairwiseCriteria: [],
+                  criteriaWeights: [],
+                  criteriaConsistency: null,
+                  pairwiseAlternatives: {},
+                  alternativeWeights: {},
+                  finalResult: [],
+                  currentCriteriaIndex: 0,
+                  updatedAt: new Date().toISOString().slice(0, 10),
+                }
+                : p
+            ),
+          }));
+        } else {
+          get().updateProjectAhpData(projectId, "criteria", criteria);
+        }
+      },
+
+      setProjectAlternatives: (projectId, alternatives) => {
+        const project = get().getProjectById(projectId);
+        const oldAltCount = project?.alternatives?.length || 0;
+        const newAltCount = alternatives.length;
+
+        // If alternatives changed significantly, reset dependent data
+        if (newAltCount !== oldAltCount || newAltCount === 0) {
+          set((state) => ({
+            projects: state.projects.map((p) =>
+              p.id === projectId
+                ? {
+                  ...p,
+                  alternatives,
+                  pairwiseAlternatives: {},
+                  alternativeWeights: {},
+                  finalResult: [],
+                  currentCriteriaIndex: 0,
+                  updatedAt: new Date().toISOString().slice(0, 10),
+                }
+                : p
+            ),
+          }));
+        } else {
+          get().updateProjectAhpData(projectId, "alternatives", alternatives);
+        }
+      },
 
       setProjectPairwiseCriteria: (projectId, matrix) =>
         get().updateProjectAhpData(projectId, "pairwiseCriteria", matrix),
