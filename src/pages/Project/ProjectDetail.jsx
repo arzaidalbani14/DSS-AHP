@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, Badge, Row, Col, Button } from "react-bootstrap";
+import { Card, Badge, Row, Col, Button, Modal, Form } from "react-bootstrap";
+import { toast } from "react-toastify";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
 
@@ -12,6 +13,11 @@ function ProjectDetail() {
   const setCurrentProjectId = useDecisionStore((s) => s.setCurrentProjectId);
   const computeProjectStatus = useDecisionStore((s) => s.computeProjectStatus);
   const updateProject = useDecisionStore((s) => s.updateProject);
+
+  // Edit modal state
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
 
   // Set as current project when viewing
   useEffect(() => {
@@ -30,6 +36,33 @@ function ProjectDetail() {
       updateProject(id, { status: computedStatus });
     }
   }, [project, id, computeProjectStatus, updateProject]);
+
+  // Edit modal handlers
+  const handleOpenEditModal = () => {
+    setEditName(project.name);
+    setEditDescription(project.description || "");
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editName.trim()) {
+      toast.error("Nama project tidak boleh kosong");
+      return;
+    }
+
+    updateProject(id, {
+      name: editName.trim(),
+      description: editDescription.trim(),
+      updatedAt: new Date().toISOString().slice(0, 10),
+    });
+
+    toast.success("Project berhasil diperbarui");
+    setShowEditModal(false);
+  };
 
   // Not found state
   if (!project) {
@@ -127,7 +160,16 @@ function ProjectDetail() {
                 {project.description || "Tidak ada deskripsi"}
               </p>
             </div>
-            {getStatusBadge(project.status)}
+            <div className="d-flex flex-column align-items-end gap-2">
+              {getStatusBadge(project.status)}
+              <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={handleOpenEditModal}
+              >
+                Edit Project
+              </Button>
+            </div>
           </div>
           <small className="text-muted d-block mt-3">
             Dibuat: {project.createdAt} | Terakhir diubah: {project.updatedAt}
@@ -161,6 +203,44 @@ function ProjectDetail() {
       <Button variant="outline-secondary" onClick={() => navigate("/dashboard")}>
         ← Kembali ke Dashboard
       </Button>
+
+      {/* Edit Project Modal */}
+      <Modal show={showEditModal} onHide={handleCloseEditModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Project</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Nama Project</Form.Label>
+              <Form.Control
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                placeholder="Masukkan nama project"
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Deskripsi</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                placeholder="Masukkan deskripsi project (opsional)"
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-secondary" onClick={handleCloseEditModal}>
+            Batal
+          </Button>
+          <Button variant="primary" onClick={handleSaveEdit}>
+            Simpan
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </MainLayout>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Card, Table, Alert } from "react-bootstrap";
+import { Card, Table, Alert, Accordion } from "react-bootstrap";
 import { toast } from "react-toastify";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
@@ -17,6 +17,7 @@ function ResultPage() {
   const criteria = project?.criteria || [];
   const alternatives = project?.alternatives || [];
   const criteriaWeights = project?.criteriaWeights || [];
+  const criteriaConsistency = project?.criteriaConsistency || null;
   const alternativeWeights = project?.alternativeWeights || {};
   const storedFinalResult = project?.finalResult || [];
 
@@ -111,6 +112,14 @@ function ResultPage() {
     }
   }
 
+  // Helper to format CR status
+  const getCRStatus = (cr) => {
+    if (cr <= 0.1) {
+      return <span className="text-success">Konsisten (≤ 0.1)</span>;
+    }
+    return <span className="text-danger">Tidak Konsisten (&gt; 0.1)</span>;
+  };
+
   return (
     <MainLayout title="Result">
       <h2 className="mb-4">Hasil Akhir &amp; Ranking</h2>
@@ -125,7 +134,10 @@ function ResultPage() {
           </Alert>
 
           {/* Ranking Table */}
-          <Card>
+          <Card className="mb-4">
+            <Card.Header>
+              <strong>Peringkat Akhir</strong>
+            </Card.Header>
             <Table hover className="mb-0">
               <thead className="table-light">
                 <tr>
@@ -145,6 +157,158 @@ function ResultPage() {
               </tbody>
             </Table>
           </Card>
+
+          {/* AHP Calculation Summary */}
+          <h5 className="mb-3">Ringkasan Perhitungan AHP</h5>
+
+          <Accordion defaultActiveKey="0" className="mb-4">
+            {/* Criteria Weights */}
+            <Accordion.Item eventKey="0">
+              <Accordion.Header>
+                Bobot Kriteria
+              </Accordion.Header>
+              <Accordion.Body>
+                <p className="text-muted mb-3">
+                  Bobot kriteria menunjukkan tingkat kepentingan relatif setiap kriteria dalam pengambilan keputusan.
+                  Semakin tinggi bobot, semakin besar pengaruh kriteria tersebut terhadap hasil akhir.
+                  Nilai persentase menunjukkan proporsi kontribusi kriteria terhadap total keputusan (total semua persentase = 100%).
+                </p>
+                <Table bordered size="sm" className="mb-3">
+                  <thead className="table-light">
+                    <tr>
+                      <th>No</th>
+                      <th>Kriteria</th>
+                      <th>Bobot</th>
+                      <th>Persentase</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {criteria.map((c, index) => (
+                      <tr key={c.id}>
+                        <td>{index + 1}</td>
+                        <td>{c.name}</td>
+                        <td>{criteriaWeights[index]?.toFixed(4) || "-"}</td>
+                        <td>{((criteriaWeights[index] || 0) * 100).toFixed(2)}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+
+                {criteriaConsistency && (
+                  <div className="bg-light p-3 rounded">
+                    <strong>Konsistensi Perbandingan Kriteria:</strong>
+                    <ul className="mb-0 mt-2">
+                      <li>λmax (Lambda Max): {criteriaConsistency.lambdaMax?.toFixed(4) || "-"}</li>
+                      <li>CI (Consistency Index): {criteriaConsistency.ci?.toFixed(4) || "-"}</li>
+                      <li>CR (Consistency Ratio): {criteriaConsistency.cr?.toFixed(4) || "-"} — {getCRStatus(criteriaConsistency.cr)}</li>
+                    </ul>
+                  </div>
+                )}
+              </Accordion.Body>
+            </Accordion.Item>
+
+            {/* Alternative Weights per Criteria */}
+            <Accordion.Item eventKey="1">
+              <Accordion.Header>
+                Bobot Alternatif per Kriteria
+              </Accordion.Header>
+              <Accordion.Body>
+                <p className="text-muted mb-3">
+                  Bobot alternatif menunjukkan peringkat masing-masing alternatif berdasarkan setiap kriteria.
+                  Bobot lokal adalah nilai relatif dalam satu kriteria, sedangkan bobot global adalah kontribusi ke skor akhir.
+                </p>
+                {criteria.map((c, cIndex) => {
+                  const altData = alternativeWeights[c.id];
+                  const weights = altData?.weights || [];
+                  const consistency = altData?.consistency;
+
+                  return (
+                    <div key={c.id} className="mb-4">
+                      <h6 className="mb-2">
+                        {cIndex + 1}. Kriteria: <strong>{c.name}</strong>
+                      </h6>
+
+                      <Table bordered size="sm" className="mb-2">
+                        <thead className="table-light">
+                          <tr>
+                            <th>Alternatif</th>
+                            <th>Bobot Lokal</th>
+                            <th>Bobot Global</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {alternatives.map((alt, aIndex) => {
+                            const localWeight = weights[aIndex] || 0;
+                            const globalWeight = localWeight * (criteriaWeights[cIndex] || 0);
+                            return (
+                              <tr key={alt.id}>
+                                <td>{alt.name}</td>
+                                <td>{localWeight.toFixed(4)}</td>
+                                <td>{globalWeight.toFixed(4)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </Table>
+
+                    </div>
+                  );
+                })}
+              </Accordion.Body>
+            </Accordion.Item>
+
+            {/* Final Calculation Breakdown */}
+            <Accordion.Item eventKey="2">
+              <Accordion.Header>
+                Perhitungan Skor Akhir
+              </Accordion.Header>
+              <Accordion.Body>
+                <p className="text-muted mb-3">
+                  Tabel ini menampilkan kontribusi setiap kriteria terhadap skor akhir masing-masing alternatif.
+                  Total di kolom terakhir adalah skor akhir yang menentukan peringkat.
+                </p>
+                <Table bordered size="sm">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Alternatif</th>
+                      {criteria.map((c, i) => (
+                        <th key={c.id} className="text-center">
+                          {c.name}<br />
+                          <small className="text-muted">({(criteriaWeights[i] * 100).toFixed(1)}%)</small>
+                        </th>
+                      ))}
+                      <th className="text-center">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {alternatives.map((alt, aIndex) => {
+                      let total = 0;
+                      const contributions = criteria.map((c, cIndex) => {
+                        const altData = alternativeWeights[c.id];
+                        const localWeight = altData?.weights?.[aIndex] || 0;
+                        const contribution = localWeight * (criteriaWeights[cIndex] || 0);
+                        total += contribution;
+                        return contribution;
+                      });
+
+                      const resultItem = finalResult.find(r => r.id === alt.id);
+                      const isWinner = resultItem && resultItem.id === best.id;
+
+                      return (
+                        <tr key={alt.id} className={isWinner ? "table-success" : ""}>
+                          <td><strong>{alt.name}</strong></td>
+                          {contributions.map((contrib, i) => (
+                            <td key={i} className="text-center">{contrib.toFixed(4)}</td>
+                          ))}
+                          <td className="text-center"><strong>{total.toFixed(4)}</strong></td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+              </Accordion.Body>
+            </Accordion.Item>
+          </Accordion>
         </>
       )}
     </MainLayout>
