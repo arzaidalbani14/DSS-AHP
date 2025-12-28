@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Card, Table, Alert } from "react-bootstrap";
+import { toast } from "react-toastify";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
 import { aggregateResults } from "../../services/ahpService";
@@ -52,6 +53,8 @@ function ResultPage() {
 
   // Save result to store and sync status
   const prevResultRef = useRef(null);
+  const hasShownToast = useRef(false);
+
   useEffect(() => {
     if (!project) return;
 
@@ -61,6 +64,12 @@ function ResultPage() {
     if (resultChanged && storeNeedsUpdate && computedResult.length > 0) {
       prevResultRef.current = computedResult;
       setProjectFinalResult(projectId, computedResult);
+
+      // Show toast only once per calculation
+      if (!hasShownToast.current) {
+        toast.success("Perhitungan AHP selesai!");
+        hasShownToast.current = true;
+      }
 
       // Sync status to project after saving result
       setTimeout(() => {

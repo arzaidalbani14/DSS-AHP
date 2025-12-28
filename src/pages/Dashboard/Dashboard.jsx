@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Table, Badge } from "react-bootstrap";
+import { toast } from "react-toastify";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
 
@@ -14,6 +15,7 @@ function Dashboard() {
   const handleDelete = (projectId, projectName) => {
     if (window.confirm(`Hapus project "${projectName}"?`)) {
       deleteProject(projectId);
+      toast.success(`Project "${projectName}" berhasil dihapus`);
     }
   };
 

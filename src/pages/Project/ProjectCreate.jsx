@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Button, Card } from "react-bootstrap";
+import { toast } from "react-toastify";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
 
@@ -16,7 +17,7 @@ function ProjectCreate() {
     e.preventDefault();
 
     if (!name.trim()) {
-      alert("Nama project wajib diisi");
+      toast.error("Nama project wajib diisi");
       return;
     }
 
@@ -35,7 +36,7 @@ function ProjectCreate() {
     addProject(newProject);
     setCurrentProjectId(projectId);
 
-    console.log("PROJECT CREATED:", newProject);
+    toast.success(`Project "${name.trim()}" berhasil dibuat!`);
     navigate(`/project/${projectId}`);
   };
 
