@@ -1,9 +1,16 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
 
 function AlternativesPage() {
-  const { alternatives, setAlternatives } = useDecisionStore();
+  const { id: projectId } = useParams();
+
+  // Get project-specific data
+  const project = useDecisionStore((s) => s.getProjectById(projectId));
+  const setProjectAlternatives = useDecisionStore((s) => s.setProjectAlternatives);
+
+  const alternatives = project?.alternatives || [];
 
   const [name, setName] = useState("");
   const [editingId, setEditingId] = useState(null);
@@ -17,12 +24,12 @@ function AlternativesPage() {
       name: name.trim(),
     };
 
-    setAlternatives([...alternatives, newAlternative]);
+    setProjectAlternatives(projectId, [...alternatives, newAlternative]);
     setName("");
   };
 
   const handleDelete = (id) => {
-    setAlternatives(alternatives.filter((a) => a.id !== id));
+    setProjectAlternatives(projectId, alternatives.filter((a) => a.id !== id));
   };
 
   const handleEditStart = (alt) => {
@@ -37,7 +44,7 @@ function AlternativesPage() {
       a.id === id ? { ...a, name: editingName.trim() } : a
     );
 
-    setAlternatives(updated);
+    setProjectAlternatives(projectId, updated);
     setEditingId(null);
     setEditingName("");
   };
@@ -46,6 +53,14 @@ function AlternativesPage() {
     setEditingId(null);
     setEditingName("");
   };
+
+  if (!project) {
+    return (
+      <MainLayout title="Alternatives">
+        <p>Project tidak ditemukan.</p>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout title="Alternatives">

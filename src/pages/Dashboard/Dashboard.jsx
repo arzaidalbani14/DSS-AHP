@@ -22,6 +22,8 @@ function Dashboard() {
         return "Draft";
       case "progress":
         return "In Progress";
+      case "completed":
+        return "Completed";
       case "ready":
         return "Ready";
       default:

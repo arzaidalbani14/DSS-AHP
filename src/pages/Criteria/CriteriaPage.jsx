@@ -1,9 +1,16 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
 
 function CriteriaPage() {
-  const { criteria, setCriteria } = useDecisionStore();
+  const { id: projectId } = useParams();
+
+  // Get project-specific data
+  const project = useDecisionStore((s) => s.getProjectById(projectId));
+  const setProjectCriteria = useDecisionStore((s) => s.setProjectCriteria);
+
+  const criteria = project?.criteria || [];
 
   const [name, setName] = useState("");
   const [editingId, setEditingId] = useState(null);
@@ -17,17 +24,17 @@ function CriteriaPage() {
       name: name.trim(),
     };
 
-    setCriteria([...criteria, newCriteria]);
+    setProjectCriteria(projectId, [...criteria, newCriteria]);
     setName("");
   };
 
   const handleDelete = (id) => {
-    setCriteria(criteria.filter((c) => c.id !== id));
+    setProjectCriteria(projectId, criteria.filter((c) => c.id !== id));
   };
 
-  const handleEditStart = (criteria) => {
-    setEditingId(criteria.id);
-    setEditingName(criteria.name);
+  const handleEditStart = (crit) => {
+    setEditingId(crit.id);
+    setEditingName(crit.name);
   };
 
   const handleEditSave = (id) => {
@@ -37,7 +44,7 @@ function CriteriaPage() {
       c.id === id ? { ...c, name: editingName.trim() } : c
     );
 
-    setCriteria(updated);
+    setProjectCriteria(projectId, updated);
     setEditingId(null);
     setEditingName("");
   };
@@ -46,6 +53,14 @@ function CriteriaPage() {
     setEditingId(null);
     setEditingName("");
   };
+
+  if (!project) {
+    return (
+      <MainLayout title="Criteria">
+        <p>Project tidak ditemukan.</p>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout title="Criteria">

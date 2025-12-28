@@ -1,27 +1,33 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
+import { useParams } from "react-router-dom";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
 import { aggregateResults } from "../../services/ahpService";
 
 function ResultPage() {
-  const {
-    criteria,
-    alternatives,
-    criteriaWeights,
-    alternativeWeights,
-    finalResult,
-    setFinalResult,
-  } = useDecisionStore();
+  const { id: projectId } = useParams();
 
-  useEffect(() => {
+  // Get project-specific data
+  const project = useDecisionStore((s) => s.getProjectById(projectId));
+  const setProjectFinalResult = useDecisionStore((s) => s.setProjectFinalResult);
+
+  const criteria = project?.criteria || [];
+  const alternatives = project?.alternatives || [];
+  const criteriaWeights = project?.criteriaWeights || [];
+  const alternativeWeights = project?.alternativeWeights || {};
+  const storedFinalResult = project?.finalResult || [];
+
+  // Compute result using useMemo instead of useEffect to avoid infinite loop
+  const computedResult = useMemo(() => {
+    if (!project) return [];
+
     // validasi dasar
     if (
       criteria.length < 1 ||
       alternatives.length < 1 ||
       criteriaWeights.length !== criteria.length
     ) {
-      setFinalResult([]);
-      return;
+      return [];
     }
 
     // validasi kelengkapan bobot alternatif
@@ -33,21 +39,42 @@ function ResultPage() {
     );
 
     if (!isAlternativeDataComplete) {
-      setFinalResult([]);
-      return;
+      return [];
     }
 
     // agregasi akhir
-    const result = aggregateResults(
+    return aggregateResults(
       criteria,
       alternatives,
       criteriaWeights,
       alternativeWeights
     );
+  }, [criteria, alternatives, criteriaWeights, alternativeWeights, project]);
 
-    setFinalResult(result);
-  }, [criteria, alternatives, criteriaWeights, alternativeWeights]);
+  // Save result to store only when it changes and is different
+  const prevResultRef = useRef(null);
+  useEffect(() => {
+    if (!project) return;
 
+    const resultChanged = JSON.stringify(computedResult) !== JSON.stringify(prevResultRef.current);
+    const storeNeedsUpdate = JSON.stringify(computedResult) !== JSON.stringify(storedFinalResult);
+
+    if (resultChanged && storeNeedsUpdate && computedResult.length > 0) {
+      prevResultRef.current = computedResult;
+      setProjectFinalResult(projectId, computedResult);
+    }
+  }, [computedResult]);
+
+  if (!project) {
+    return (
+      <MainLayout title="Result">
+        <p>Project tidak ditemukan.</p>
+      </MainLayout>
+    );
+  }
+
+  // Use computed result for display
+  const finalResult = computedResult.length > 0 ? computedResult : storedFinalResult;
   const best = finalResult[0];
 
   // ---- pesan UX spesifik ----
@@ -73,7 +100,7 @@ function ResultPage() {
 
   return (
     <MainLayout title="Result">
-      <h2>Hasil Akhir & Ranking</h2>
+      <h2>Hasil Akhir &amp; Ranking</h2>
 
       {finalResult.length === 0 ? (
         <p style={{ color: "#b91c1c" }}>{message}</p>
@@ -89,8 +116,8 @@ function ResultPage() {
               borderRadius: "6px",
             }}
           >
-            <strong>Rekomendasi Terbaik:</strong>{" "}
-            {best.name} (Skor: {best.score.toFixed(4)})
+            <strong>Rekomendasi Terbaik:</strong> {best.name} (Skor:{" "}
+            {best.score.toFixed(4)})
           </div>
 
           {/* Tabel ranking */}
@@ -111,11 +138,7 @@ function ResultPage() {
               {finalResult.map((item, index) => (
                 <tr
                   key={item.id}
-                  style={
-                    index === 0
-                      ? { background: "#f0fdf4" }
-                      : undefined
-                  }
+                  style={index === 0 ? { background: "#f0fdf4" } : undefined}
                 >
                   <td style={td}>{index + 1}</td>
                   <td style={td}>{item.name}</td>

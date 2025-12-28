@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import MainLayout from "../../components/layout/MainLayout";
 import PairwiseMatrix from "../../components/ahp/PairwiseMatrix";
 import useDecisionStore from "../../store/decisionStore";
 import { createInitialMatrix } from "../../utils/matrixUtils";
-import { useNavigate } from "react-router-dom";
-
 
 import {
   normalizeMatrix,
@@ -16,64 +15,69 @@ import {
 } from "../../services/ahpService";
 
 function CompareAlternatives() {
-  const {
-    criteria,
-    alternatives,
+  const { id: projectId } = useParams();
+  const navigate = useNavigate();
 
-    pairwiseAlternatives,
-    setPairwiseAlternatives,
+  // Get project-specific data
+  const project = useDecisionStore((s) => s.getProjectById(projectId));
+  const setProjectPairwiseAlternatives = useDecisionStore((s) => s.setProjectPairwiseAlternatives);
+  const setProjectAlternativeWeights = useDecisionStore((s) => s.setProjectAlternativeWeights);
+  const updateProjectAhpData = useDecisionStore((s) => s.updateProjectAhpData);
 
-    alternativeWeights,
-    setAlternativeWeights,
-
-    currentCriteriaIndex,
-    setCurrentCriteriaIndex,
-  } = useDecisionStore();
+  const criteria = project?.criteria || [];
+  const alternatives = project?.alternatives || [];
+  const pairwiseAlternatives = project?.pairwiseAlternatives || {};
+  const alternativeWeights = project?.alternativeWeights || {};
+  const currentCriteriaIndex = project?.currentCriteriaIndex || 0;
 
   const criteriaCount = criteria.length;
   const altCount = alternatives.length;
-  const navigate = useNavigate();
-
 
   // Sinkronisasi index jika kriteria berubah
   useEffect(() => {
-    if (currentCriteriaIndex >= criteriaCount) {
-      setCurrentCriteriaIndex(0);
+    if (!project) return;
+    if (currentCriteriaIndex >= criteriaCount && criteriaCount > 0) {
+      updateProjectAhpData(projectId, "currentCriteriaIndex", 0);
     }
-  }, [criteriaCount]);
+  }, [criteriaCount, project]);
 
   const currentCriteria = criteria[currentCriteriaIndex];
 
   // Inisialisasi / reset matrix per kriteria
   useEffect(() => {
-    if (!currentCriteria || altCount < 2) return;
+    if (!project || !currentCriteria || altCount < 2) return;
 
     const existingMatrix = pairwiseAlternatives[currentCriteria.id];
 
     if (
       !existingMatrix ||
       existingMatrix.length !== altCount ||
-      existingMatrix.some(row => row.length !== altCount)
+      existingMatrix.some((row) => row.length !== altCount)
     ) {
-      setPairwiseAlternatives(
-        currentCriteria.id,
-        createInitialMatrix(altCount)
-      );
+      setProjectPairwiseAlternatives(projectId, currentCriteria.id, createInitialMatrix(altCount));
 
       // reset bobot lama
-      setAlternativeWeights(currentCriteria.id, {
+      setProjectAlternativeWeights(projectId, currentCriteria.id, {
         weights: [],
         consistency: null,
       });
     }
-  }, [currentCriteria, alternatives]);
+  }, [currentCriteria, alternatives, project]);
+
+  if (!project) {
+    return (
+      <MainLayout title="Compare Alternatives">
+        <p>Project tidak ditemukan.</p>
+      </MainLayout>
+    );
+  }
 
   if (!currentCriteria) {
     return (
       <MainLayout title="Compare Alternatives">
         <p>Semua kriteria telah diproses.</p>
 
-        <button onClick={() => setCurrentCriteriaIndex(0)}>
+        <button onClick={() => updateProjectAhpData(projectId, "currentCriteriaIndex", 0)}>
           Ulangi dari Kriteria Pertama
         </button>
       </MainLayout>
@@ -83,8 +87,8 @@ function CompareAlternatives() {
   const matrix = pairwiseAlternatives[currentCriteria.id];
 
   const handleMatrixChange = (newMatrix) => {
-    // ✅ SIMPAN MATRIX DULU (BUG 1 FIX)
-    setPairwiseAlternatives(currentCriteria.id, newMatrix);
+    // Simpan matrix
+    setProjectPairwiseAlternatives(projectId, currentCriteria.id, newMatrix);
 
     const n = altCount;
 
@@ -96,7 +100,7 @@ function CompareAlternatives() {
     const ci = calculateCI(lambdaMax, n);
     const cr = calculateCR(ci, n);
 
-    setAlternativeWeights(currentCriteria.id, {
+    setProjectAlternativeWeights(projectId, currentCriteria.id, {
       weights,
       consistency: { lambdaMax, ci, cr },
     });
@@ -104,17 +108,16 @@ function CompareAlternatives() {
 
   const handleNext = () => {
     if (currentCriteriaIndex < criteriaCount - 1) {
-      setCurrentCriteriaIndex(currentCriteriaIndex + 1);
+      updateProjectAhpData(projectId, "currentCriteriaIndex", currentCriteriaIndex + 1);
     } else {
-      //  semua kriteria selesai ke Result
-      navigate("/project/1/result");
+      // semua kriteria selesai ke Result
+      navigate(`/project/${projectId}/result`);
     }
   };
 
-
   const handlePrev = () => {
     if (currentCriteriaIndex > 0) {
-      setCurrentCriteriaIndex(currentCriteriaIndex - 1);
+      updateProjectAhpData(projectId, "currentCriteriaIndex", currentCriteriaIndex - 1);
     }
   };
 
@@ -124,8 +127,7 @@ function CompareAlternatives() {
   return (
     <MainLayout title="Compare Alternatives">
       <h2>
-        Perbandingan Alternatif –{" "}
-        <strong>{currentCriteria.name}</strong>
+        Perbandingan Alternatif – <strong>{currentCriteria.name}</strong>
       </h2>
 
       {matrix && (
@@ -141,10 +143,7 @@ function CompareAlternatives() {
           Kriteria Sebelumnya
         </button>
 
-        <button
-          onClick={handleNext}
-          style={{ marginLeft: "8px" }}
-        >
+        <button onClick={handleNext} style={{ marginLeft: "8px" }}>
           {isLast ? "Selesai" : "Lanjut Kriteria Berikutnya"}
         </button>
       </div>

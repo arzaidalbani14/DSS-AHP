@@ -5,12 +5,14 @@ import useDecisionStore from "../../store/decisionStore";
 function Sidebar() {
   const { id: projectId } = useParams();
 
-  const {
-    criteria,
-    alternatives,
-    criteriaWeights,
-    finalResult,
-  } = useDecisionStore();
+  // Get project-specific data
+  const project = useDecisionStore((s) => s.getProjectById(projectId));
+
+  // Get AHP data from project (or empty defaults)
+  const criteria = project?.criteria || [];
+  const alternatives = project?.alternatives || [];
+  const criteriaWeights = project?.criteriaWeights || [];
+  const finalResult = project?.finalResult || [];
 
   // Only show AHP menu if we're inside a project
   const showAhpMenu = !!projectId;
@@ -20,6 +22,7 @@ function Sidebar() {
       label: "Overview",
       path: `/project/${projectId}`,
       enabled: true,
+      end: true, // Exact match only
     },
     {
       label: "Criteria",
@@ -91,6 +94,7 @@ function Sidebar() {
             <NavLink
               key={item.label}
               to={item.path}
+              end={item.end}
               style={navStyle}
             >
               {item.label}

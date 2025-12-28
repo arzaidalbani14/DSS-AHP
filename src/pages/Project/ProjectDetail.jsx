@@ -7,47 +7,29 @@ function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const projects = useDecisionStore((s) => s.projects);
-  const setProject = useDecisionStore((s) => s.setProject);
+  const project = useDecisionStore((s) => s.getProjectById(id));
+  const setCurrentProjectId = useDecisionStore((s) => s.setCurrentProjectId);
+  const computeProjectStatus = useDecisionStore((s) => s.computeProjectStatus);
   const updateProject = useDecisionStore((s) => s.updateProject);
-  const criteria = useDecisionStore((s) => s.criteria);
-  const alternatives = useDecisionStore((s) => s.alternatives);
-  const criteriaWeights = useDecisionStore((s) => s.criteriaWeights);
-  const alternativeWeights = useDecisionStore((s) => s.alternativeWeights);
-  const finalResult = useDecisionStore((s) => s.finalResult);
 
-  // Find current project
-  const currentProject = projects.find((p) => p.id === id);
-
-  // Auto-calculate status based on AHP progress
-  const computeStatus = () => {
-    if (finalResult.length > 0) {
-      return "completed";
-    }
-    if (criteria.length > 0 || alternatives.length > 0 || criteriaWeights.length > 0) {
-      return "progress";
-    }
-    return "draft";
-  };
-
-  const projectStatus = computeStatus();
-
-  // Set as active project
+  // Set as current project when viewing
   useEffect(() => {
-    if (currentProject) {
-      setProject(currentProject);
+    if (project) {
+      setCurrentProjectId(id);
     }
-  }, [currentProject, setProject]);
+  }, [project, id, setCurrentProjectId]);
 
-  // Sync computed status to project store (so Dashboard shows correct status)
+  // Sync computed status to project
   useEffect(() => {
-    if (currentProject && currentProject.status !== projectStatus) {
-      updateProject(id, { status: projectStatus });
+    if (!project) return;
+    const computedStatus = computeProjectStatus(id);
+    if (project.status !== computedStatus) {
+      updateProject(id, { status: computedStatus });
     }
-  }, [currentProject, projectStatus, updateProject, id]);
+  }, [project, id, computeProjectStatus, updateProject]);
 
   // Not found state
-  if (!currentProject) {
+  if (!project) {
     return (
       <MainLayout title="Project Not Found">
         <div style={notFoundStyle}>
@@ -62,6 +44,13 @@ function ProjectDetail() {
       </MainLayout>
     );
   }
+
+  // Get AHP data from project
+  const criteria = project.criteria || [];
+  const alternatives = project.alternatives || [];
+  const criteriaWeights = project.criteriaWeights || [];
+  const alternativeWeights = project.alternativeWeights || {};
+  const finalResult = project.finalResult || [];
 
   // AHP Steps with status
   const steps = [
@@ -98,22 +87,22 @@ function ProjectDetail() {
   ];
 
   return (
-    <MainLayout title={currentProject.name}>
+    <MainLayout title={project.name}>
       {/* Project Info Card */}
       <div style={cardStyle}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
-            <h2 style={{ margin: 0 }}>{currentProject.name}</h2>
+            <h2 style={{ margin: 0 }}>{project.name}</h2>
             <p style={{ color: "#6b7280", marginTop: "8px" }}>
-              {currentProject.description || "Tidak ada deskripsi"}
+              {project.description || "Tidak ada deskripsi"}
             </p>
           </div>
-          <span style={statusBadge(projectStatus)}>
-            {renderStatus(projectStatus)}
+          <span style={statusBadge(project.status)}>
+            {renderStatus(project.status)}
           </span>
         </div>
         <p style={{ fontSize: "14px", color: "#9ca3af", marginTop: "12px" }}>
-          Dibuat: {currentProject.createdAt} | Terakhir diubah: {currentProject.updatedAt}
+          Dibuat: {project.createdAt} | Terakhir diubah: {project.updatedAt}
         </p>
       </div>
 
@@ -137,12 +126,8 @@ function ProjectDetail() {
         ))}
       </div>
 
-      {/* Quick Actions */}
       <div style={{ marginTop: "32px" }}>
-        <button
-          onClick={() => navigate("/dashboard")}
-          style={secondaryButton}
-        >
+        <button onClick={() => navigate("/dashboard")} style={secondaryButton}>
           ← Kembali ke Dashboard
         </button>
       </div>
@@ -150,7 +135,7 @@ function ProjectDetail() {
   );
 }
 
-// ========= HELPERS =========
+// Helper render status
 const renderStatus = (status) => {
   switch (status) {
     case "draft":
@@ -160,30 +145,42 @@ const renderStatus = (status) => {
     case "completed":
       return "Completed";
     default:
-      return status;
+      return "-";
   }
 };
 
-// ========= STYLES =========
+// Styles
 const notFoundStyle = {
+  padding: "32px",
   textAlign: "center",
-  padding: "48px",
+  border: "1px dashed #d1d5db",
+  borderRadius: "8px",
 };
 
 const cardStyle = {
-  padding: "24px",
-  background: "#f9fafb",
-  borderRadius: "12px",
+  padding: "20px",
   border: "1px solid #e5e7eb",
+  borderRadius: "8px",
+  background: "#fff",
 };
 
 const statusBadge = (status) => ({
   padding: "4px 12px",
-  borderRadius: "20px",
-  fontSize: "13px",
-  fontWeight: 500,
-  background: status === "completed" ? "#d1fae5" : status === "progress" ? "#dbeafe" : "#f3f4f6",
-  color: status === "completed" ? "#065f46" : status === "progress" ? "#1e40af" : "#374151",
+  borderRadius: "9999px",
+  fontSize: "12px",
+  fontWeight: 600,
+  background:
+    status === "completed"
+      ? "#d1fae5"
+      : status === "progress"
+        ? "#dbeafe"
+        : "#f3f4f6",
+  color:
+    status === "completed"
+      ? "#065f46"
+      : status === "progress"
+        ? "#1e40af"
+        : "#374151",
 });
 
 const stepsGrid = {
@@ -194,16 +191,14 @@ const stepsGrid = {
 
 const stepCard = (status) => ({
   padding: "16px",
-  borderRadius: "10px",
-  border: `2px solid ${status === "done" ? "#10b981" : "#e5e7eb"}`,
+  border: status === "done" ? "2px solid #10b981" : "1px solid #e5e7eb",
+  borderRadius: "8px",
   background: status === "done" ? "#ecfdf5" : "#fff",
   cursor: "pointer",
-  transition: "all 0.2s ease",
 });
 
 const checkMark = {
   color: "#10b981",
-  fontSize: "18px",
   fontWeight: "bold",
 };
 

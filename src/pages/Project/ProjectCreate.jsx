@@ -6,7 +6,7 @@ import useDecisionStore from "../../store/decisionStore";
 function ProjectCreate() {
   const navigate = useNavigate();
   const addProject = useDecisionStore((s) => s.addProject);
-  const resetAhpData = useDecisionStore((s) => s.resetAhpData);
+  const setCurrentProjectId = useDecisionStore((s) => s.setCurrentProjectId);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -21,9 +21,10 @@ function ProjectCreate() {
 
     // ===== CREATE NEW PROJECT =====
     const now = new Date().toISOString().slice(0, 10);
+    const projectId = Date.now().toString();
 
     const newProject = {
-      id: Date.now().toString(),
+      id: projectId,
       name: name.trim(),
       description: description.trim(),
       status: "draft",
@@ -31,15 +32,14 @@ function ProjectCreate() {
       updatedAt: now,
     };
 
-    // Reset AHP data from previous project
-    resetAhpData();
-
-    console.log("PROJECT CREATED:", newProject);
+    // Add project (AHP data is automatically included via createEmptyAhpData)
     addProject(newProject);
 
-    // nanti: simpan ke storage / backend
-    // sekarang: langsung redirect
-    navigate(`/project/${newProject.id}`);
+    // Set as current project
+    setCurrentProjectId(projectId);
+
+    console.log("PROJECT CREATED:", newProject);
+    navigate(`/project/${projectId}`);
   };
 
   return (
