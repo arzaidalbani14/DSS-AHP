@@ -120,37 +120,39 @@ function CompareAlternatives() {
   return (
     <MainLayout title="Compare Alternatives">
       <h2 className="mb-2">Perbandingan Alternatif</h2>
-      <p className="text-muted mb-4">
+      <p className="text-muted mb-4" style={{ fontSize: "18px" }}>
         Kriteria: <strong>{currentCriteria.name}</strong> ({currentCriteriaIndex + 1} dari {criteriaCount})
       </p>
 
-      {altCount < 2 ? (
-        <Alert variant="warning">Minimal 2 alternatif diperlukan.</Alert>
-      ) : (
-        <>
-          <Card className="mb-4">
-            <Card.Body>
-              {matrix && (
-                <PairwiseMatrix
-                  items={alternatives}
-                  matrix={matrix}
-                  onChange={handleMatrixChange}
-                />
-              )}
-            </Card.Body>
-          </Card>
+      {
+        altCount < 2 ? (
+          <Alert variant="warning">Minimal 2 alternatif diperlukan.</Alert>
+        ) : (
+          <>
+            <Card className="mb-4">
+              <Card.Body>
+                {matrix && (
+                  <PairwiseMatrix
+                    items={alternatives}
+                    matrix={matrix}
+                    onChange={handleMatrixChange}
+                  />
+                )}
+              </Card.Body>
+            </Card>
 
-          <div className="d-flex gap-2">
-            <Button variant="outline-secondary" onClick={handlePrev} disabled={isFirst}>
-              ← Kriteria Sebelumnya
-            </Button>
-            <Button variant="primary" onClick={handleNext}>
-              {isLast ? "Selesai → Lihat Hasil" : "Lanjut Kriteria Berikutnya →"}
-            </Button>
-          </div>
-        </>
-      )}
-    </MainLayout>
+            <div className="d-flex gap-2">
+              <Button variant="outline-secondary" onClick={handlePrev} disabled={isFirst}>
+                ← Kriteria Sebelumnya
+              </Button>
+              <Button variant="primary" onClick={handleNext}>
+                {isLast ? "Selesai → Lihat Hasil" : "Lanjut Kriteria Berikutnya →"}
+              </Button>
+            </div>
+          </>
+        )
+      }
+    </MainLayout >
   );
 }
 
