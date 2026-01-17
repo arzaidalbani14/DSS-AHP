@@ -7,9 +7,8 @@ function Landing() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: "Beranda", href: "#" },
-    { name: "Tentang", href: "#about" },
-    { name: "Fitur", href: "#features" },
+    { name: "Login", href: "#" },
+    { name: "About", href: "#about" },
   ];
 
   return (

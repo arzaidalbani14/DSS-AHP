@@ -136,7 +136,7 @@ function ResultPage() {
           {/* Ranking Table */}
           <Card className="mb-4">
             <Card.Header>
-              <strong>Peringkat Akhir</strong>
+              <strong>Peringkat Berdasarkan Nilai Preferensi</strong>
             </Card.Header>
             <Table hover className="mb-0">
               <thead className="table-light">
