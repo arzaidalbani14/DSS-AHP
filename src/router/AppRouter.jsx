@@ -12,6 +12,8 @@ const AlternativesPage = lazy(() => import("../pages/Alternatives/AlternativesPa
 const CompareCriteria = lazy(() => import("../pages/Comparison/CompareCriteria.jsx"));
 const CompareAlternatives = lazy(() => import("../pages/Comparison/CompareAlternatives.jsx"));
 const ResultPage = lazy(() => import("../pages/Result/ResultPage.jsx"));
+const LoginPage = lazy(() => import("../pages/Auth/LoginPage.jsx"));
+const CreateAccountPage = lazy(() => import("../pages/Auth/CreateAccountPage.jsx"));
 
 const LoadingFallback = () => (
   <div style={{
@@ -33,6 +35,8 @@ function AppRouter() {
     <Suspense fallback={<LoadingFallback />}>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/createaccount" element={<CreateAccountPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
 
         <Route path="/project/new" element={<ProjectCreate />} />

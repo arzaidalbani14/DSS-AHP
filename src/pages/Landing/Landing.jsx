@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../../store/AuthContext";
 
 function Landing() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: "Login", href: "#" },
+    { name: "Login", href: "/login" },
     { name: "About", href: "#about" },
   ];
 
@@ -75,12 +77,19 @@ function Landing() {
               <li key={link.name}>
                 <a
                   href={link.href}
+                  onClick={(e) => {
+                    if (link.href.startsWith("/")) {
+                      e.preventDefault();
+                      navigate(link.href);
+                    }
+                  }}
                   style={{
                     textDecoration: "none",
                     color: "var(--bg-body)",
                     fontWeight: "500",
                     fontSize: "0.95rem",
                     transition: "color 0.2s",
+                    cursor: "pointer",
                   }}
                   onMouseEnter={(e) => e.target.style.color = "var(--bg-glass)"}
                   onMouseLeave={(e) => e.target.style.color = "var(--bg-body)"}
@@ -233,7 +242,13 @@ function Landing() {
                   <li key={link.name} style={{ padding: "12px 0" }}>
                     <a
                       href={link.href}
-                      onClick={() => setIsMenuOpen(false)}
+                      onClick={(e) => {
+                        setIsMenuOpen(false);
+                        if (link.href.startsWith("/")) {
+                          e.preventDefault();
+                          navigate(link.href);
+                        }
+                      }}
                       style={{
                         textDecoration: "none",
                         color: "#475569",
@@ -319,7 +334,7 @@ function Landing() {
           </p>
 
           <motion.button
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate(isAuthenticated ? "/dashboard" : "/login")}
             whileHover={{
               scale: 1.05,
               boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.3)",
