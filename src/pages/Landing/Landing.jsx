@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../store/AuthContext";
+import SettingsSidebar from "../../components/layout/SettingsSidebar";
 
 function Landing() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const navLinks = [
     { name: "Login", href: "/login" },
@@ -99,9 +101,9 @@ function Landing() {
               </li>
             ))}
             <li>
-              {/* Hamburger Menu Button */}
+              {/* Burger Menu Button */}
               <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                 style={{
                   background: "none",
                   border: "none",
@@ -157,10 +159,10 @@ function Landing() {
             </li>
           </ul>
 
-          {/* Mobile Hamburger Button */}
+          {/* Mobile Burger Button */}
           <button
             className="d-md-none"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
             style={{
               background: "none",
               border: "none",
@@ -367,6 +369,12 @@ function Landing() {
           </div>
         </motion.div>
       </div>
+      {/* Settings Sidebar */}
+      <SettingsSidebar
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        topOffset={60}
+      />
     </div>
   );
 }

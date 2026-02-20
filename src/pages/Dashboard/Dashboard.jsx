@@ -61,7 +61,7 @@ function Dashboard() {
             onClick={() => navigate("/project/new")}
             style={{ padding: "0.6rem 1.5rem", borderRadius: "8px", fontWeight: "600", boxShadow: "0 4px 6px -1px rgba(37, 99, 235, 0.2)" }}
           >
-            + New Project
+            New Project
           </Button>
         </div>
 

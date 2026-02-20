@@ -202,3 +202,65 @@ h6 {
   border-color: #cbd5e1;
   background: #f8fafc;
 }
+
+/* ===== Burger Menu Button ===== */
+.burger-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.burger-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.burger-line {
+  display: block;
+  width: 22px;
+  height: 2.5px;
+  background: var(--text-main);
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+/* ===== Settings Sidebar ===== */
+.settings-sidebar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 300px;
+  max-width: 85vw;
+  background: #fff;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.1);
+}
+
+.settings-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.settings-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.settings-menu-item:hover {
+  background: #f1f5f9;
+}
