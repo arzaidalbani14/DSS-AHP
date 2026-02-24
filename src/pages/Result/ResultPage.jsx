@@ -68,7 +68,7 @@ function ResultPage() {
 
       // Show toast only once per calculation
       if (!hasShownToast.current) {
-        toast.success("Perhitungan AHP selesai!");
+        toast.success("AHP calculation completed!");
         hasShownToast.current = true;
       }
 
@@ -85,7 +85,7 @@ function ResultPage() {
   if (!project) {
     return (
       <MainLayout title="Result">
-        <p className="text-muted">Project tidak ditemukan.</p>
+        <p className="text-muted">Project not found.</p>
       </MainLayout>
     );
   }
@@ -96,11 +96,11 @@ function ResultPage() {
   // Error messages
   let message = null;
   if (criteria.length < 1) {
-    message = "Belum ada kriteria yang ditentukan.";
+    message = "No criteria have been defined.";
   } else if (alternatives.length < 1) {
-    message = "Belum ada alternatif yang ditambahkan.";
+    message = "No alternatives have been added.";
   } else if (criteriaWeights.length !== criteria.length) {
-    message = "Perbandingan kriteria belum selesai.";
+    message = "Criteria comparison is not yet complete.";
   } else {
     const incompleteAlt = criteria.find(
       (c) =>
@@ -108,21 +108,21 @@ function ResultPage() {
         alternativeWeights[c.id].weights?.length !== alternatives.length
     );
     if (incompleteAlt) {
-      message = `Perbandingan alternatif untuk kriteria "${incompleteAlt.name}" belum selesai.`;
+      message = `Alternative comparison for criterion "${incompleteAlt.name}" is not yet complete.`;
     }
   }
 
   // Helper to format CR status
   const getCRStatus = (cr) => {
     if (cr <= 0.1) {
-      return <span className="text-success">Konsisten (≤ 0.1)</span>;
+      return <span className="text-success">Consistent (≤ 0.1)</span>;
     }
-    return <span className="text-danger">Tidak Konsisten (&gt; 0.1)</span>;
+    return <span className="text-danger">Inconsistent (&gt; 0.1)</span>;
   };
 
   return (
     <MainLayout title="Result">
-      <h2 className="mb-4">Hasil Akhir &amp; Ranking</h2>
+      <h2 className="mb-4">Final Result &amp; Rank</h2>
 
       {finalResult.length === 0 ? (
         <Alert variant="warning">{message}</Alert>
@@ -130,20 +130,20 @@ function ResultPage() {
         <>
           {/* Best Recommendation */}
           <Alert variant="success" className="mb-4">
-            <strong>Rekomendasi Terbaik:</strong> {best.name} (Skor: {best.score.toFixed(4)})
+            <strong>Best Recommendation:</strong> {best.name} (Score: {best.score.toFixed(4)})
           </Alert>
 
           {/* Ranking Table */}
           <Card className="mb-4">
             <Card.Header>
-              <strong>Peringkat Berdasarkan Nilai Preferensi</strong>
+              <strong>Ranking Based on Preference Values</strong>
             </Card.Header>
             <Table hover className="mb-0">
               <thead className="table-light">
                 <tr>
-                  <th>Peringkat</th>
-                  <th>Alternatif</th>
-                  <th>Nilai Preferensi</th>
+                  <th>Rank</th>
+                  <th>Alternative</th>
+                  <th>Preference Value</th>
                 </tr>
               </thead>
               <tbody>
@@ -159,27 +159,27 @@ function ResultPage() {
           </Card>
 
           {/* AHP Calculation Summary */}
-          <h5 className="mb-3">Ringkasan Perhitungan AHP</h5>
+          <h5 className="mb-3">AHP Calculation Summary</h5>
 
           <Accordion defaultActiveKey="0" className="mb-4">
             {/* Criteria Weights */}
             <Accordion.Item eventKey="0">
               <Accordion.Header>
-                Bobot Kriteria
+                Criteria Weight
               </Accordion.Header>
               <Accordion.Body>
                 <p className="text-muted mb-3">
-                  Bobot kriteria menunjukkan tingkat kepentingan relatif setiap kriteria dalam pengambilan keputusan.
-                  Semakin tinggi bobot, semakin besar pengaruh kriteria tersebut terhadap hasil akhir.
-                  Nilai persentase menunjukkan proporsi kontribusi kriteria terhadap total keputusan (total semua persentase = 100%).
+                  Criteria weights indicate the relative importance of each criterion in the decision-making process.
+                  The higher the weight, the greater the influence of that criterion on the final result.
+                  Percentage values show the proportion of each criterion's contribution to the total decision (all percentages sum to 100%).
                 </p>
                 <Table bordered size="sm" className="mb-3">
                   <thead className="table-light">
                     <tr>
                       <th>No</th>
-                      <th>Kriteria</th>
-                      <th>Bobot</th>
-                      <th>Persentase</th>
+                      <th>Criteria</th>
+                      <th>Weight</th>
+                      <th>Percentage</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -196,7 +196,7 @@ function ResultPage() {
 
                 {criteriaConsistency && (
                   <div className="bg-light p-3 rounded">
-                    <strong>Konsistensi Perbandingan Kriteria:</strong>
+                    <strong>Compare Criteria Consistency:</strong>
                     <ul className="mb-0 mt-2">
                       <li>λmax (Lambda Max): {criteriaConsistency.lambdaMax?.toFixed(4) || "-"}</li>
                       <li>CI (Consistency Index): {criteriaConsistency.ci?.toFixed(4) || "-"}</li>
@@ -210,12 +210,12 @@ function ResultPage() {
             {/* Alternative Weights per Criteria */}
             <Accordion.Item eventKey="1">
               <Accordion.Header>
-                Bobot Alternatif per Kriteria
+                Alternative Weight each Criteria
               </Accordion.Header>
               <Accordion.Body>
                 <p className="text-muted mb-3">
-                  Bobot alternatif menunjukkan peringkat masing-masing alternatif berdasarkan setiap kriteria.
-                  Bobot lokal adalah nilai relatif dalam satu kriteria, sedangkan bobot global adalah kontribusi ke skor akhir.
+                  Alternative weights show the ranking of each alternative based on every criterion.
+                  Local weight is the relative value within one criterion, while global weight is the contribution to the final score.
                 </p>
                 {criteria.map((c, cIndex) => {
                   const altData = alternativeWeights[c.id];
@@ -225,15 +225,15 @@ function ResultPage() {
                   return (
                     <div key={c.id} className="mb-4">
                       <h6 className="mb-2">
-                        {cIndex + 1}. Kriteria: <strong>{c.name}</strong>
+                        {cIndex + 1}. Criterion: <strong>{c.name}</strong>
                       </h6>
 
                       <Table bordered size="sm" className="mb-2">
                         <thead className="table-light">
                           <tr>
-                            <th>Alternatif</th>
-                            <th>Bobot Lokal</th>
-                            <th>Bobot Global</th>
+                            <th>Alternative</th>
+                            <th>Local Weight</th>
+                            <th>Global Weight</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -260,17 +260,17 @@ function ResultPage() {
             {/* Final Calculation Breakdown */}
             <Accordion.Item eventKey="2">
               <Accordion.Header>
-                Perhitungan Skor Akhir
+                Final Score Calculation
               </Accordion.Header>
               <Accordion.Body>
                 <p className="text-muted mb-3">
-                  Tabel ini menampilkan kontribusi setiap kriteria terhadap skor akhir masing-masing alternatif.
-                  Total di kolom terakhir adalah skor akhir yang menentukan peringkat.
+                  This table shows the contribution of each criterion to the final score of each alternative.
+                  The total in the last column is the final score that determines the ranking.
                 </p>
                 <Table bordered size="sm">
                   <thead className="table-light">
                     <tr>
-                      <th>Alternatif</th>
+                      <th>Alternative</th>
                       {criteria.map((c, i) => (
                         <th key={c.id} className="text-center">
                           {c.name}<br />

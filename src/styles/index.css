@@ -222,11 +222,10 @@ h6 {
 
 .burger-line {
   display: block;
-  width: 22px;
-  height: 2.5px;
+  width: 24px;
+  height: 3px;
   background: var(--text-main);
-  border-radius: 2px;
-  transition: all 0.3s;
+  border-radius: 3px;
 }
 
 /* ===== Settings Sidebar ===== */

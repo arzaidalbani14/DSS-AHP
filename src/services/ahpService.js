@@ -11,7 +11,7 @@ export function normalizeMatrix(matrix) {
   );
 }
 
-// Bobot = rata-rata baris
+// Weight = row average
 export function calculateWeights(normalizedMatrix) {
   return normalizedMatrix.map(
     (row) => row.reduce((a, b) => a + b, 0) / row.length

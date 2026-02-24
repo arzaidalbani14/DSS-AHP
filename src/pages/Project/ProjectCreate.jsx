@@ -17,7 +17,7 @@ function ProjectCreate() {
     e.preventDefault();
 
     if (!name.trim()) {
-      toast.error("Nama project wajib diisi");
+      toast.error("Project name is required");
       return;
     }
 
@@ -36,52 +36,52 @@ function ProjectCreate() {
     addProject(newProject);
     setCurrentProjectId(projectId);
 
-    toast.success(`Project "${name.trim()}" berhasil dibuat!`);
+    toast.success(`Project "${name.trim()}" has been created!`);
     navigate(`/project/${projectId}`);
   };
 
   return (
     <MainLayout title="New Project">
       <div style={{ maxWidth: "600px" }}>
-        <h2 className="mb-2">Buat Project Keputusan</h2>
+        <h2 className="mb-2">Create New Decision Project</h2>
         <p className="text-muted mb-4">
-          Tentukan masalah keputusan yang akan dianalisis menggunakan AHP
+          Determine the decision problem to solve using AHP
         </p>
 
         <Card>
           <Card.Body>
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
-                <Form.Label>Nama Project *</Form.Label>
+                <Form.Label>Project Name<span style={{ color: "#fa3636ff" }}>*</span></Form.Label>
                 <Form.Control
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Contoh: Pemilihan Laptop"
+                  placeholder="For example: Choosing Laptop"
                 />
               </Form.Group>
 
               <Form.Group className="mb-4">
-                <Form.Label>Deskripsi (opsional)</Form.Label>
+                <Form.Label>Description (optional)</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Jelaskan singkat tujuan keputusan"
+                  placeholder="Explain the decision purpose in short"
                 />
               </Form.Group>
 
               <div className="d-flex gap-2">
                 <Button variant="primary" type="submit">
-                  Buat Project
+                  Create Project
                 </Button>
                 <Button
                   variant="outline-secondary"
                   type="button"
                   onClick={() => navigate("/dashboard")}
                 >
-                  Batal
+                  Cancel
                 </Button>
               </div>
             </Form>

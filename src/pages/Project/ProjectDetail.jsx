@@ -50,7 +50,7 @@ function ProjectDetail() {
 
   const handleSaveEdit = () => {
     if (!editName.trim()) {
-      toast.error("Nama project tidak boleh kosong");
+      toast.error("Project name cannot be empty");
       return;
     }
 
@@ -60,7 +60,7 @@ function ProjectDetail() {
       updatedAt: new Date().toISOString().slice(0, 10),
     });
 
-    toast.success("Project berhasil diperbarui");
+    toast.success("Project updated successfully");
     setShowEditModal(false);
   };
 
@@ -70,12 +70,12 @@ function ProjectDetail() {
       <MainLayout title="Project Not Found">
         <Card className="text-center py-5">
           <Card.Body>
-            <h4>Project Tidak Ditemukan</h4>
+            <h4>Project not Found</h4>
             <p className="text-muted mb-3">
-              Project dengan ID "{id}" tidak ada atau sudah dihapus.
+              Project with id "{id}" does not exist or has been deleted.
             </p>
             <Button variant="primary" onClick={() => navigate("/dashboard")}>
-              Kembali ke Dashboard
+              Return to Dashboard
             </Button>
           </Card.Body>
         </Card>
@@ -111,28 +111,28 @@ function ProjectDetail() {
       path: `/project/${id}/criteria`,
       done: criteria.length > 0,
       enabled: true, // Always accessible
-      desc: `${criteria.length} kriteria`,
+      desc: `${criteria.length} criteria`,
     },
     {
       label: "2. Alternatives",
       path: `/project/${id}/alternatives`,
       done: criteria.length >= 1 && alternatives.length > 0, // Done only if criteria exists
       enabled: criteria.length >= 1,
-      desc: `${alternatives.length} alternatif`,
+      desc: `${alternatives.length} alternative${alternatives.length != 1 ? 's' : ''}`,
     },
     {
       label: "3. Compare Criteria",
       path: `/project/${id}/compare-criteria`,
       done: criteria.length >= 2 && criteriaWeights.length > 0 && criteriaWeights.length === criteria.length,
       enabled: criteria.length >= 2,
-      desc: (criteria.length >= 2 && criteriaWeights.length === criteria.length) ? "Completed" : "Belum",
+      desc: (criteria.length >= 2 && criteriaWeights.length === criteria.length) ? "Completed" : "Unfinished",
     },
     {
       label: "4. Compare Alternatives",
       path: `/project/${id}/compare-alternatives`,
       done: criteria.length >= 1 && alternatives.length >= 2 && criteriaWeights.length === criteria.length && Object.keys(alternativeWeights || {}).length > 0,
       enabled: criteria.length >= 1 && alternatives.length >= 2 && criteriaWeights.length === criteria.length,
-      desc: "Per kriteria",
+      desc: "Per Criteria",
     },
     {
       label: "5. Result",
@@ -144,7 +144,7 @@ function ProjectDetail() {
         criteriaWeights.length === criteria.length &&
         Object.keys(alternativeWeights || {}).length > 0
       ) || finalResult.length > 0,
-      desc: finalResult.length > 0 ? "Ready" : "Belum",
+      desc: finalResult.length > 0 ? "Ready" : "Unfinished",
     },
   ];
 
@@ -157,7 +157,7 @@ function ProjectDetail() {
             <div>
               <h3 className="mb-2">{project.name}</h3>
               <p className="text-muted mb-0">
-                {project.description || "Tidak ada deskripsi"}
+                {project.description || "No Description"}
               </p>
             </div>
             <div className="d-flex flex-column align-items-end gap-2">
@@ -172,13 +172,13 @@ function ProjectDetail() {
             </div>
           </div>
           <small className="text-muted d-block mt-3">
-            Dibuat: {project.createdAt} | Terakhir diubah: {project.updatedAt}
+            Created at: {project.createdAt} | Updated at: {project.updatedAt}
           </small>
         </Card.Body>
       </Card>
 
       {/* AHP Flow Steps */}
-      <h5 className="mb-3">Langkah AHP</h5>
+      <h5 className="mb-3">Steps of AHP</h5>
       <Row className="g-3 mb-4">
         {steps.map((step) => (
           <Col key={step.path} xs={12} sm={6} md={4} lg={3}>
@@ -187,7 +187,7 @@ function ProjectDetail() {
               style={{
                 cursor: step.enabled ? "pointer" : "not-allowed",
                 backgroundColor: "var(--primary-color-subtle)",
-                color: "#000000ff"
+                color: "#e9e9e9ff"
               }}
               onClick={() => step.enabled && navigate(step.path)}
             >
@@ -197,7 +197,7 @@ function ProjectDetail() {
                   {step.done && <span style={{ color: "#2e2e2eff" }}></span>}
                   {!step.enabled && <span style={{ color: "rgba(70, 70, 70, 0.6)" }}></span>}
                 </div>
-                <small style={{ color: "rgba(0, 0, 0, 0.8)" }}>{step.desc}</small>
+                <small style={{ color: "rgba(240, 240, 240, 0.8)" }}>{step.desc}</small>
               </Card.Body>
             </Card>
           </Col>
@@ -205,7 +205,7 @@ function ProjectDetail() {
       </Row>
 
       <Button variant="outline-secondary" onClick={() => navigate("/dashboard")}>
-        Kembali ke Dashboard
+        Return to Dashboard
       </Button>
 
       {/* Edit Project Modal */}
@@ -216,32 +216,32 @@ function ProjectDetail() {
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>Nama Project</Form.Label>
+              <Form.Label>Project Name</Form.Label>
               <Form.Control
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                placeholder="Masukkan nama project"
+                placeholder="Enter project name"
               />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Deskripsi</Form.Label>
+              <Form.Label>Description</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
-                placeholder="Masukkan deskripsi project (opsional)"
+                placeholder="Enter project description (optional)"
               />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="outline-secondary" onClick={handleCloseEditModal}>
-            Batal
+            Cancel
           </Button>
           <Button variant="primary" onClick={handleSaveEdit}>
-            Simpan
+            Save
           </Button>
         </Modal.Footer>
       </Modal>

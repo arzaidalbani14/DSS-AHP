@@ -63,7 +63,7 @@ function CompareAlternatives() {
   if (!project) {
     return (
       <MainLayout title="Compare Alternatives">
-        <p className="text-muted">Project tidak ditemukan.</p>
+        <p className="text-muted">Project not found.</p>
       </MainLayout>
     );
   }
@@ -71,9 +71,9 @@ function CompareAlternatives() {
   if (!currentCriteria) {
     return (
       <MainLayout title="Compare Alternatives">
-        <Alert variant="success">Semua kriteria telah diproses.</Alert>
+        <Alert variant="success">All criteria has been processed.</Alert>
         <Button variant="outline-primary" onClick={() => updateProjectAhpData(projectId, "currentCriteriaIndex", 0)}>
-          Ulangi dari Kriteria Pertama
+          Start new from the first criteria
         </Button>
       </MainLayout>
     );
@@ -119,14 +119,14 @@ function CompareAlternatives() {
 
   return (
     <MainLayout title="Compare Alternatives">
-      <h2 className="mb-2">Perbandingan Alternatif</h2>
+      <h2 className="mb-2">Compare Alternatives</h2>
       <p className="text-muted mb-4" style={{ fontSize: "18px" }}>
-        Kriteria: <strong>{currentCriteria.name}</strong> ({currentCriteriaIndex + 1} dari {criteriaCount})
+        Criteria: <strong>{currentCriteria.name}</strong> ({currentCriteriaIndex + 1} dari {criteriaCount})
       </p>
 
       {
         altCount < 2 ? (
-          <Alert variant="warning">Minimal 2 alternatif diperlukan.</Alert>
+          <Alert variant="warning">Add at least 2 alternatives.</Alert>
         ) : (
           <>
             <Card className="mb-4">
@@ -143,10 +143,10 @@ function CompareAlternatives() {
 
             <div className="d-flex gap-2">
               <Button variant="outline-secondary" onClick={handlePrev} disabled={isFirst}>
-                ← Kriteria Sebelumnya
+                Previous Criteria
               </Button>
               <Button variant="primary" onClick={handleNext}>
-                {isLast ? "Selesai → Lihat Hasil" : "Lanjut Kriteria Berikutnya →"}
+                {isLast ? "Finish and show result" : "Continue to next Criteria"}
               </Button>
             </div>
           </>

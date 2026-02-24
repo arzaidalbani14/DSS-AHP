@@ -16,8 +16,8 @@ function ConsistencyBadge({ cr }) {
       }}
     >
       {isConsistent
-        ? `Konsisten (CR = ${cr.toFixed(3)})`
-        : `Tidak Konsisten (CR = ${cr.toFixed(3)})`}
+        ? `Consistent (CR = ${cr.toFixed(3)})`
+        : `Inconsistent (CR = ${cr.toFixed(3)})`}
     </div>
   );
 }

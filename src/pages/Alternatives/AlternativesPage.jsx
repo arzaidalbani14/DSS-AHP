@@ -58,14 +58,14 @@ function AlternativesPage() {
   if (!project) {
     return (
       <MainLayout title="Alternatives">
-        <p className="text-muted">Project tidak ditemukan.</p>
+        <p className="text-muted">Project not found.</p>
       </MainLayout>
     );
   }
 
   return (
     <MainLayout title="Alternatives">
-      <h2 className="mb-4">Daftar Alternatif</h2>
+      <h2 className="mb-4">List of Alternatives</h2>
 
       {/* Add Alternative Form */}
       <Card className="mb-4">
@@ -74,12 +74,12 @@ function AlternativesPage() {
             <InputGroup>
               <Form.Control
                 type="text"
-                placeholder="Nama alternatif (contoh: Laptop A)"
+                placeholder="Alternative name (for example: Laptop A)"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
               <Button variant="primary" type="submit">
-                Tambah
+                Add
               </Button>
             </InputGroup>
           </Form>
@@ -90,7 +90,7 @@ function AlternativesPage() {
       {alternatives.length === 0 ? (
         <Card className="text-center py-4" style={{ borderColor: "#b8b8b8ff", borderStyle: "dashed" }}>
           <Card.Body>
-            <p className="text-muted mb-0">Belum ada alternatif, tambahkan alternatif di atas.</p>
+            <p className="text-muted mb-0">No alternative, add alternative first.</p>
           </Card.Body>
         </Card>
       ) : (
@@ -109,10 +109,10 @@ function AlternativesPage() {
                       className="flex-grow-1"
                     />
                     <Button size="sm" variant="success" onClick={() => handleEditSave(alt.id)}>
-                      Simpan
+                      Save
                     </Button>
                     <Button size="sm" variant="outline-secondary" onClick={handleEditCancel}>
-                      Batal
+                      Cancel
                     </Button>
                   </>
                 ) : (
@@ -122,7 +122,7 @@ function AlternativesPage() {
                       Edit
                     </Button>
                     <Button size="sm" variant="outline-danger" onClick={() => handleDelete(alt.id)}>
-                      Hapus
+                      Delete
                     </Button>
                   </>
                 )}

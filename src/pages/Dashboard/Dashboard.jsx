@@ -14,9 +14,9 @@ function Dashboard() {
   const deleteProject = useDecisionStore((s) => s.deleteProject);
 
   const handleDelete = (projectId, projectName) => {
-    if (window.confirm(`Hapus project "${projectName}"?`)) {
+    if (window.confirm(`Delete project "${projectName}"?`)) {
       deleteProject(projectId);
-      toast.success(`Project "${projectName}" berhasil dihapus`);
+      toast.success(`Project "${projectName}" has been deleted`);
     }
   };
 

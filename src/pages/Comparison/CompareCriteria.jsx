@@ -87,7 +87,7 @@ function CompareCriteria() {
   if (!project) {
     return (
       <MainLayout title="Compare Criteria">
-        <p className="text-muted">Project tidak ditemukan.</p>
+        <p className="text-muted">Project not found.</p>
       </MainLayout>
     );
   }
@@ -96,11 +96,11 @@ function CompareCriteria() {
 
   return (
     <MainLayout title="Compare Criteria">
-      <h2 className="mb-4">Perbandingan Kriteria</h2>
+      <h2 className="mb-4">Compare Criteria</h2>
 
       {criteria.length < 2 ? (
         <Alert variant="warning">
-          Minimal 2 kriteria diperlukan untuk perbandingan.
+          Add at least 2 criteria to start compare.
         </Alert>
       ) : (
         <>
@@ -133,12 +133,12 @@ function CompareCriteria() {
               disabled={!isConsistent}
               onClick={() => navigate(`/project/${projectId}/compare-alternatives`)}
             >
-              Lanjut ke Perbandingan Alternatif →
+              Continue to Compare Alternatives
             </Button>
 
             {!isConsistent && criteriaConsistency && (
               <Alert variant="danger" className="mb-0 py-2 px-3">
-                Perbandingan belum konsisten. Silakan perbaiki nilai.
+                Comparison is inconsistent. Please reassign the values.
               </Alert>
             )}
           </div>

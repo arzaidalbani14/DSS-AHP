@@ -24,7 +24,7 @@ function CreateAccountPage() {
             return;
         }
 
-        // Simpan user data dan redirect ke dashboard
+        // Save user data and redirect to dashboard
         login({ email, firstName, lastName });
         navigate("/dashboard");
     };
@@ -53,7 +53,7 @@ function CreateAccountPage() {
                     onMouseEnter={(e) => (e.currentTarget.style.color = "var(--primary-color)")}
                     onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
                 >
-                    ← Kembali ke Login
+                    ← Back to Login
                 </Link>
             </motion.div>
 

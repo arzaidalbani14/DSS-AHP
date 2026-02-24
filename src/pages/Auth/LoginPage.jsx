@@ -12,7 +12,7 @@ function LoginPage() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Simpan user data dan redirect ke dashboard
+        // Save user data and redirect to dashboard
         login({ email });
         navigate("/dashboard");
     };
@@ -41,7 +41,7 @@ function LoginPage() {
                     onMouseEnter={(e) => (e.currentTarget.style.color = "var(--primary-color)")}
                     onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
                 >
-                    ← Kembali
+                    Back
                 </Link>
             </motion.div>
 

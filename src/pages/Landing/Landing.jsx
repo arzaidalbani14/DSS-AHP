@@ -329,7 +329,7 @@ function Landing() {
               lineHeight: "1.6",
             }}
           >
-            Sistem Pendukung Keputusan Profesional Berbasis <br />
+            Professional Decision Support System Based on <br />
             <strong style={{ color: "var(--primary-color)" }}>
               Analytic Hierarchy Process
             </strong>
@@ -355,7 +355,7 @@ function Landing() {
               letterSpacing: "0.5px",
             }}
           >
-            Masuk ke Dashboard
+            Go to Dashboard
           </motion.button>
 
           <div

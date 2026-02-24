@@ -71,10 +71,10 @@ function SettingsSidebar({ isOpen, onClose, topOffset = 0 }) {
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M2 12h20" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
                                     <div>
                                         <div style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-main)" }}>
-                                            Bahasa
+                                            Language
                                         </div>
                                         <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                                            Indonesia
+                                            English
                                         </div>
                                     </div>
                                 </div>
@@ -106,7 +106,7 @@ function SettingsSidebar({ isOpen, onClose, topOffset = 0 }) {
                             color: "var(--text-muted)",
                             textAlign: "center",
                         }}>
-                            DSS AHP v1.0
+                            DSS AHP v0.56 (pre release)
                         </div>
                     </motion.aside>
                 </>

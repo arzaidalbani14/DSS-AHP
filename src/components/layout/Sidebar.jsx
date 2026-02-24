@@ -114,7 +114,7 @@ function Sidebar() {
                 <div
                   key={item.label}
                   style={disabledStyle}
-                  title={!showAhpMenu ? "Pilih project terlebih dahulu" : "Lengkapi langkah sebelumnya"}
+                  title={!showAhpMenu ? "Select a project first" : "Complete the previous step"}
                 >
                   {item.label}
                 </div>

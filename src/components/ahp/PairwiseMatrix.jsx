@@ -9,7 +9,7 @@ function PairwiseMatrix({ items, matrix, onChange }) {
     matrix.length !== items.length ||
     matrix.some(row => !row || row.length !== items.length)
   ) {
-    return <p className="text-muted">Matriks belum siap.</p>;
+    return <p className="text-muted">Matrix is not ready.</p>;
   }
 
   const handleChange = (i, j, value) => {
