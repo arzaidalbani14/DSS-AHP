@@ -9,8 +9,13 @@ function App() {
     <AuthProvider>
       <AppRouter />
       <ToastContainer
+        toastStyle={{
+          borderRadius: "100px",
+          padding: "2px",
+          backgroundColor: "rgba(11, 28, 65, 1)"
+        }}
         position="top-center"
-        autoClose={3000}
+        autoClose={2000}
         hideProgressBar={true}
         newestOnTop
         closeOnClick

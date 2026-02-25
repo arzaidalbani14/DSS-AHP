@@ -126,7 +126,7 @@ function Sidebar() {
 
       {/* Footer / User Info could go here */}
       <div style={{ padding: "16px", borderTop: "1px solid #1e293b", fontSize: "0.75rem", color: "#475569" }}>
-        &copy; 2025 DSS System
+        &copy; 2025 DSS AHP
       </div>
     </aside>
   );
