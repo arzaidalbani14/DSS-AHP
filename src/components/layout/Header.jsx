@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import SettingsSidebar from "./SettingsSidebar";
+import { useTheme } from "../../store/ThemeContext";
 
 function Header({ title }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { isDark } = useTheme();
 
   return (
     <>
       <header
         style={{
           padding: "16px 24px",
-          background: "rgba(255, 255, 255, 0.8)",
+          background: isDark ? "rgba(18, 18, 18, 0.85)" : "rgba(255, 255, 255, 0.8)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
           borderBottom: "1px solid rgba(226, 232, 240, 0.8)",

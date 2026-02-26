@@ -183,28 +183,29 @@ function ProjectDetail() {
         {steps.map((step) => (
           <Col key={step.path} xs={12} sm={6} md={4} lg={3}>
             <Card
-              className={`h-100 ${step.done ? 'border-success' : ''} ${!step.enabled ? 'opacity-50' : ''}`}
+              className={`h-100 step-card ${step.done ? 'border-success' : ''} ${!step.enabled ? 'opacity-50' : ''}`}
               style={{
-                cursor: step.enabled ? "pointer" : "not-allowed",
-                backgroundColor: "var(--primary-color-subtle)",
-                color: "#e9e9e9ff"
+                cursor: step.enabled ? "pointer" : "not-allowed"
               }}
               onClick={() => step.enabled && navigate(step.path)}
             >
               <Card.Body>
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <strong>{step.label}</strong>
-                  {step.done && <span style={{ color: "#2e2e2eff" }}></span>}
-                  {!step.enabled && <span style={{ color: "rgba(70, 70, 70, 0.6)" }}></span>}
+                  {step.done && <span className="text-success fw-bold">✓</span>}
                 </div>
-                <small style={{ color: "rgba(240, 240, 240, 0.8)" }}>{step.desc}</small>
+                <small className="opacity-75">{step.desc}</small>
               </Card.Body>
             </Card>
           </Col>
         ))}
       </Row>
 
-      <Button variant="outline-secondary" onClick={() => navigate("/dashboard")}>
+      <Button
+        variant="light"
+        className="btn-light-primary fw-medium"
+        onClick={() => navigate("/dashboard")}
+      >
         Return to Dashboard
       </Button>
 

@@ -55,7 +55,7 @@ function Landing() {
             style={{
               fontWeight: "700",
               fontSize: "1.5rem",
-              color: "var(--bg-body)",
+              color: "#ffffff",
               cursor: "pointer",
             }}
             onClick={() => navigate("/")}
@@ -87,14 +87,14 @@ function Landing() {
                   }}
                   style={{
                     textDecoration: "none",
-                    color: "var(--bg-body)",
+                    color: "#ffffff",
                     fontWeight: "500",
                     fontSize: "0.95rem",
                     transition: "color 0.2s",
                     cursor: "pointer",
                   }}
-                  onMouseEnter={(e) => e.target.style.color = "var(--bg-glass)"}
-                  onMouseLeave={(e) => e.target.style.color = "var(--bg-body)"}
+                  onMouseEnter={(e) => e.target.style.color = "rgba(255, 255, 255, 0.8)"}
+                  onMouseLeave={(e) => e.target.style.color = "#ffffff"}
                 >
                   {link.name}
                 </a>
@@ -126,7 +126,7 @@ function Landing() {
                     display: "block",
                     width: "24px",
                     height: "3px",
-                    backgroundColor: "var(--bg-body)",
+                    backgroundColor: "#ffffff",
                     borderRadius: "2px",
                   }}
                 />
@@ -138,7 +138,7 @@ function Landing() {
                     display: "block",
                     width: "24px",
                     height: "3px",
-                    backgroundColor: "var(--bg-body)",
+                    backgroundColor: "#ffffff",
                     borderRadius: "2px",
                   }}
                 />
@@ -151,7 +151,7 @@ function Landing() {
                     display: "block",
                     width: "24px",
                     height: "3px",
-                    backgroundColor: "var(--bg-body)",
+                    backgroundColor: "#ffffff",
                     borderRadius: "2px",
                   }}
                 />
@@ -185,7 +185,7 @@ function Landing() {
                 display: "block",
                 width: "24px",
                 height: "3px",
-                backgroundColor: "#374151",
+                backgroundColor: "#ffffff",
                 borderRadius: "2px",
                 transition: "all 0.3s",
               }}
@@ -198,7 +198,7 @@ function Landing() {
                 display: "block",
                 width: "24px",
                 height: "3px",
-                backgroundColor: "#374151",
+                backgroundColor: "#ffffff",
                 borderRadius: "2px",
                 transition: "all 0.3s",
               }}
@@ -212,7 +212,7 @@ function Landing() {
                 display: "block",
                 width: "24px",
                 height: "3px",
-                backgroundColor: "#374151",
+                backgroundColor: "#ffffff",
                 borderRadius: "2px",
                 transition: "all 0.3s",
               }}
@@ -253,7 +253,7 @@ function Landing() {
                       }}
                       style={{
                         textDecoration: "none",
-                        color: "#475569",
+                        color: "#ffffff",
                         fontWeight: "500",
                         fontSize: "1rem",
                       }}
@@ -275,8 +275,8 @@ function Landing() {
                       fontSize: "1rem",
                       fontWeight: "600",
                       borderRadius: "8px",
-                      border: "none",
-                      background: "var(--primary-color)",
+                      border: "1px solid rgba(255, 255, 255, 0.5)",
+                      background: "rgba(255, 255, 255, 0.1)",
                       color: "#fff",
                       cursor: "pointer",
                     }}
@@ -312,7 +312,7 @@ function Landing() {
             style={{
               fontSize: "3.5rem",
               fontWeight: "800",
-              background: "linear-gradient(135deg, var(--primary-color), #1e293b)",
+              background: "linear-gradient(135deg, var(--primary-color), #334c75ff)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}

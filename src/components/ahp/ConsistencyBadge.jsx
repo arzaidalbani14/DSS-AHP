@@ -6,14 +6,7 @@ function ConsistencyBadge({ cr }) {
 
   return (
     <div
-      style={{
-        padding: "8px 12px",
-        borderRadius: "6px",
-        background: isConsistent ? "#DCFCE7" : "#FEE2E2",
-        color: isConsistent ? "#166534" : "#991B1B",
-        display: "inline-block",
-        marginTop: "12px",
-      }}
+      className={`consistency-badge ${isConsistent ? 'badge-consistent' : 'badge-inconsistent'}`}
     >
       {isConsistent
         ? `Consistent (CR = ${cr.toFixed(3)})`

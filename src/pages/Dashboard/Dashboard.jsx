@@ -67,7 +67,7 @@ function Dashboard() {
 
         {/* Project List / Empty State */}
         {projects.length === 0 ? (
-          <Card className="text-center py-5 glass-card" style={{ border: "2px dashed #cbd5e1", background: "rgba(255,255,255,0.4)" }}>
+          <Card className="text-center py-5 glass-card-empty" style={{ border: "2px dashed #cbd5e1" }}>
             <Card.Body>
               <div className="mb-3 text-muted" style={{ fontSize: "3rem", opacity: 0.5 }}>📂</div>
               <h5 className="text-muted mb-3">No projects found</h5>
@@ -83,10 +83,10 @@ function Dashboard() {
               <Table hover className="mb-0 align-middle" style={{ borderCollapse: "separate", borderSpacing: "0" }}>
                 <thead className="bg-light">
                   <tr>
-                    <th className="py-3 ps-4 border-bottom text-muted small text-uppercase fw-bold" style={{ backgroundColor: "#f8fafc" }}>Project Name</th>
-                    <th className="py-3 border-bottom text-muted small text-uppercase fw-bold" style={{ backgroundColor: "#f8fafc" }}>Status</th>
-                    <th className="py-3 border-bottom text-muted small text-uppercase fw-bold" style={{ backgroundColor: "#f8fafc" }}>Last Updated</th>
-                    <th className="py-3 pe-4 border-bottom text-end text-muted small text-uppercase fw-bold" style={{ backgroundColor: "#f8fafc" }}>Actions</th>
+                    <th className="py-3 ps-4 border-bottom text-muted small text-uppercase fw-bold">Project Name</th>
+                    <th className="py-3 border-bottom text-muted small text-uppercase fw-bold">Status</th>
+                    <th className="py-3 border-bottom text-muted small text-uppercase fw-bold">Last Updated</th>
+                    <th className="py-3 pe-4 border-bottom text-end text-muted small text-uppercase fw-bold">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -102,18 +102,16 @@ function Dashboard() {
                         <Button
                           variant="light"
                           size="sm"
-                          className="me-2 text-primary fw-medium"
+                          className="me-2 text-primary fw-medium btn-light-primary"
                           onClick={() => navigate(`/project/${project.id}`)}
-                          style={{ background: "rgba(37, 99, 235, 0.1)", border: "none" }}
                         >
                           Open
                         </Button>
                         <Button
                           variant="light"
                           size="sm"
-                          className="text-danger fw-medium"
+                          className="text-danger fw-medium btn-light-danger"
                           onClick={() => handleDelete(project.id, project.name)}
-                          style={{ background: "rgba(239, 68, 68, 0.1)", border: "none" }}
                         >
                           Delete
                         </Button>

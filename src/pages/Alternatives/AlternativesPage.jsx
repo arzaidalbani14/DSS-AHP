@@ -88,7 +88,7 @@ function AlternativesPage() {
 
       {/* Alternatives List */}
       {alternatives.length === 0 ? (
-        <Card className="text-center py-4" style={{ borderColor: "#b8b8b8ff", borderStyle: "dashed" }}>
+        <Card className="text-center py-4 glass-card-empty" style={{ border: "2px dashed #cbd5e1" }}>
           <Card.Body>
             <p className="text-muted mb-0">No alternative, add alternative first.</p>
           </Card.Body>
