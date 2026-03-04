@@ -309,6 +309,17 @@ function ResultPage() {
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
+
+          {/* Navigation Buttons */}
+          <div className="d-flex justify-content-start align-items-center mt-4 pt-3 border-top border-light">
+            <Button
+              variant="light"
+              className="btn-light-secondary fw-medium"
+              onClick={() => navigate(`/project/${projectId}/compare-alternatives`)}
+            >
+              Back to Compare Alternatives
+            </Button>
+          </div>
         </>
       )}
     </MainLayout>

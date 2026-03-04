@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import SettingsSidebar from "./SettingsSidebar";
 import { useTheme } from "../../store/ThemeContext";
 
-function Header({ title }) {
+function Header({ title, onMobileMenuClick }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { isDark } = useTheme();
 
@@ -24,14 +24,25 @@ function Header({ title }) {
           boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
         }}
       >
-        <h1 style={{ margin: 0, fontSize: "1.5rem", color: "var(--text-main)", fontWeight: 700 }}>
-          {title}
-        </h1>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <button
+            onClick={onMobileMenuClick}
+            className="burger-btn d-md-none"
+            aria-label="Open main menu"
+          >
+            <span className="burger-line" />
+            <span className="burger-line" />
+            <span className="burger-line" />
+          </button>
+          <h1 style={{ margin: 0, fontSize: "1.5rem", color: "var(--text-main)", fontWeight: 700 }}>
+            {title}
+          </h1>
+        </div>
 
-        {/* Burger Menu Button */}
+        {/* Burger Menu Button (Settings) - Hide on mobile */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="burger-btn"
+          className="burger-btn d-none d-md-flex"
           aria-label="Open settings"
         >
           <span className="burger-line" />

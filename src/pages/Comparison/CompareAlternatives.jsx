@@ -141,13 +141,22 @@ function CompareAlternatives() {
               </Card.Body>
             </Card>
 
-            <div className="d-flex gap-2">
-              <Button variant="outline-secondary" onClick={handlePrev} disabled={isFirst}>
-                Previous Criteria
+            <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-light">
+              <Button
+                variant="light"
+                className="btn-light-secondary fw-medium"
+                onClick={() => navigate(`/project/${projectId}/compare-criteria`)}
+              >
+                Back to Compare Criteria
               </Button>
-              <Button variant="primary" onClick={handleNext}>
-                {isLast ? "Finish and show result" : "Continue to next Criteria"}
-              </Button>
+              <div className="d-flex gap-2">
+                <Button variant="outline-secondary" onClick={handlePrev} disabled={isFirst}>
+                  Previous Step
+                </Button>
+                <Button variant="primary" className="fw-medium px-4" onClick={handleNext}>
+                  {isLast ? "Next: Result" : "Next Step"}
+                </Button>
+              </div>
             </div>
           </>
         )

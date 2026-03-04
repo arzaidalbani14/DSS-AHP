@@ -1,12 +1,18 @@
 import React from "react";
 import { Link, NavLink, useParams } from "react-router-dom";
 import useDecisionStore from "../../store/decisionStore";
+import { useAuth } from "../../store/AuthContext";
+import { useTheme } from "../../store/ThemeContext";
 
-function Sidebar() {
+function Sidebar({ isOpen, onClose }) {
   const { id: projectId } = useParams();
 
   // Get project-specific data
   const project = useDecisionStore((s) => s.getProjectById(projectId));
+
+  // Auth & Theme for mobile settings
+  const { logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
 
   // Get AHP data from project (or empty defaults)
   const criteria = project?.criteria || [];
@@ -55,26 +61,21 @@ function Sidebar() {
   ];
 
   return (
-    <aside
-      style={{
-        width: "250px", // Slightly wider for better readability
-        background: "#0f172a", // Slate 900
-        color: "#f8fafc",
-        display: "flex",
-        flexDirection: "column",
-        borderRight: "1px solid #1e293b",
-        height: "100vh",
-        position: "sticky",
-        top: 0,
-      }}
-    >
-      <div style={{ padding: "24px", borderBottom: "1px solid #1e293b" }}>
-        <Link to="/" style={{ textDecoration: "none" }}>
+    <aside className={`main-sidebar ${isOpen ? 'open' : ''}`}>
+      <div style={{ padding: "24px", borderBottom: "1px solid #1e293b", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Link to="/" style={{ textDecoration: "none" }} onClick={onClose}>
           <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: "800", letterSpacing: "0.5px", color: "white" }}>
             DSS <span style={{ color: "var(--primary-color)" }}>AHP</span>
           </h2>
+          <small style={{ color: "#64748b", fontSize: "0.75rem", display: "block" }}>Decision Support</small>
         </Link>
-        <small style={{ color: "#64748b", fontSize: "0.75rem" }}>Decision Support</small>
+        <button
+          className="d-md-none"
+          onClick={onClose}
+          style={{ background: "none", border: "none", color: "#94a3b8", fontSize: "1.5rem", padding: "0" }}
+        >
+          ✕
+        </button>
       </div>
 
       <div style={{ padding: "16px", flex: 1, overflowY: "auto" }}>
@@ -84,10 +85,10 @@ function Sidebar() {
             Main
           </small>
           <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <NavLink to="/dashboard" style={navStyle}>
+            <NavLink to="/dashboard" style={navStyle} onClick={onClose}>
               Dashboard
             </NavLink>
-            <NavLink to="/project/new" style={navStyle}>
+            <NavLink to="/project/new" style={navStyle} onClick={onClose}>
               New Project
             </NavLink>
           </nav>
@@ -107,6 +108,7 @@ function Sidebar() {
                   to={item.path}
                   end={item.end}
                   style={navStyle}
+                  onClick={onClose}
                 >
                   {item.label}
                 </NavLink>
@@ -124,8 +126,23 @@ function Sidebar() {
         </div>
       </div>
 
+      {/* Mobile Settings Block */}
+      <div className="d-md-none" style={{ padding: "16px", borderTop: "1px solid #1e293b" }}>
+        <small style={{ color: "#475569", textTransform: "uppercase", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "1px", display: "block", marginBottom: "8px" }}>
+          Settings
+        </small>
+        <div className="mobile-settings-item" onClick={() => { toggleTheme(); onClose(); }}>
+          <span style={{ marginRight: "12px", fontSize: "1.1rem" }}>{isDark ? "☀️" : "🌙"}</span>
+          Switch to {isDark ? "Light" : "Dark"} Mode
+        </div>
+        <div className="mobile-settings-item" onClick={() => { logout(); onClose(); }}>
+          <span style={{ marginRight: "12px", fontSize: "1.1rem" }}>🚪</span>
+          Logout
+        </div>
+      </div>
+
       {/* Footer / User Info could go here */}
-      <div style={{ padding: "16px", borderTop: "1px solid #1e293b", fontSize: "0.75rem", color: "#475569" }}>
+      <div className="d-none d-md-block" style={{ padding: "16px", borderTop: "1px solid #1e293b", fontSize: "0.75rem", color: "#475569" }}>
         &copy; 2025 DSS AHP
       </div>
     </aside>

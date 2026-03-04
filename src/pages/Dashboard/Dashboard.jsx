@@ -48,21 +48,22 @@ function Dashboard() {
         transition={{ duration: 0.4 }}
       >
         {/* Header Section */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
           <div>
-            <h2 className="mb-1 fw-bold text-dark">Welcome Back</h2>
-            <p className="text-muted mb-0">
+            <h2 className="mb-1 fw-bold text-dark fs-3">Welcome Back</h2>
+            <p className="text-muted mb-0 fs-6">
               Manage your decision support projects efficiently.
             </p>
           </div>
-          <Button
-            variant="primary"
-            size="lg"
-            onClick={() => navigate("/project/new")}
-            style={{ padding: "0.6rem 1.5rem", borderRadius: "8px", fontWeight: "600", boxShadow: "0 4px 6px -1px rgba(37, 99, 235, 0.2)" }}
-          >
-            New Project
-          </Button>
+          <div className="d-grid d-md-block">
+            <Button
+              variant="primary"
+              onClick={() => navigate("/project/new")}
+              style={{ padding: "0.6rem 1.5rem", borderRadius: "8px", fontWeight: "600", boxShadow: "0 4px 6px -1px rgba(37, 99, 235, 0.2)" }}
+            >
+              New Project
+            </Button>
+          </div>
         </div>
 
         {/* Project List / Empty State */}
@@ -83,10 +84,10 @@ function Dashboard() {
               <Table hover className="mb-0 align-middle" style={{ borderCollapse: "separate", borderSpacing: "0" }}>
                 <thead className="bg-light">
                   <tr>
-                    <th className="py-3 ps-4 border-bottom text-muted small text-uppercase fw-bold">Project Name</th>
-                    <th className="py-3 border-bottom text-muted small text-uppercase fw-bold">Status</th>
-                    <th className="py-3 border-bottom text-muted small text-uppercase fw-bold">Last Updated</th>
-                    <th className="py-3 pe-4 border-bottom text-end text-muted small text-uppercase fw-bold">Actions</th>
+                    <th className="py-3 px-2 px-md-4 border-bottom text-muted small text-uppercase fw-bold">Project Name</th>
+                    <th className="py-3 px-2 border-bottom text-muted small text-uppercase fw-bold">Status</th>
+                    <th className="py-3 px-2 border-bottom text-muted small text-uppercase fw-bold d-none d-md-table-cell">Last Updated</th>
+                    <th className="py-3 px-2 px-md-4 border-bottom text-end text-muted small text-uppercase fw-bold">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -95,10 +96,10 @@ function Dashboard() {
                       key={project.id}
                       style={{ transition: "background-color 0.2s" }}
                     >
-                      <td className="ps-4 py-3 fw-medium text-dark">{project.name}</td>
-                      <td className="py-3">{getStatusBadge(project.status)}</td>
-                      <td className="py-3 text-muted small">{project.updatedAt}</td>
-                      <td className="pe-4 py-3 text-end">
+                      <td className="px-2 px-md-4 py-3 fw-medium text-dark">{project.name}</td>
+                      <td className="px-2 py-3">{getStatusBadge(project.status)}</td>
+                      <td className="px-2 py-3 text-muted small d-none d-md-table-cell">{project.updatedAt}</td>
+                      <td className="px-2 px-md-4 py-3 text-end text-nowrap">
                         <Button
                           variant="light"
                           size="sm"

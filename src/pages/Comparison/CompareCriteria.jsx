@@ -127,20 +127,29 @@ function CompareCriteria() {
             </Card>
           )}
 
-          <div className="d-flex gap-2 align-items-center">
+          <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-light">
             <Button
-              variant="primary"
-              disabled={!isConsistent}
-              onClick={() => navigate(`/project/${projectId}/compare-alternatives`)}
+              variant="light"
+              className="btn-light-secondary fw-medium"
+              onClick={() => navigate(`/project/${projectId}/alternatives`)}
             >
-              Continue to Compare Alternatives
+              Back to Alternatives
             </Button>
-
-            {!isConsistent && criteriaConsistency && (
-              <Alert variant="danger" className="mb-0 py-2 px-3">
-                Comparison is inconsistent. Please reassign the values.
-              </Alert>
-            )}
+            <div className="d-flex gap-3 align-items-center">
+              {!isConsistent && criteriaConsistency && (
+                <Alert variant="danger" className="mb-0 py-2 px-3">
+                  Comparison is inconsistent. Please reassign the values.
+                </Alert>
+              )}
+              <Button
+                variant="primary"
+                className="fw-medium px-4"
+                disabled={!isConsistent}
+                onClick={() => navigate(`/project/${projectId}/compare-alternatives`)}
+              >
+                Next: Compare Alternatives
+              </Button>
+            </div>
           </div>
         </>
       )}

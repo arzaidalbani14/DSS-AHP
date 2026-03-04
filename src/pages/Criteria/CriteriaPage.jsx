@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Form, Button, Card, ListGroup, InputGroup } from "react-bootstrap";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
 
 function CriteriaPage() {
   const { id: projectId } = useParams();
+  const navigate = useNavigate();
 
   const project = useDecisionStore((s) => s.getProjectById(projectId));
   const setProjectCriteria = useDecisionStore((s) => s.setProjectCriteria);
@@ -131,6 +132,25 @@ function CriteriaPage() {
           </ListGroup>
         </Card>
       )}
+
+      {/* Navigation Buttons */}
+      <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-light">
+        <Button
+          variant="light"
+          className="btn-light-secondary fw-medium"
+          onClick={() => navigate(`/project/${projectId}`)}
+        >
+          Back to Overview
+        </Button>
+        <Button
+          variant="primary"
+          className="fw-medium px-4"
+          disabled={criteria.length === 0}
+          onClick={() => navigate(`/project/${projectId}/alternatives`)}
+        >
+          Next: Alternatives
+        </Button>
+      </div>
     </MainLayout>
   );
 }

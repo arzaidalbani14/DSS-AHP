@@ -201,13 +201,22 @@ function ProjectDetail() {
         ))}
       </Row>
 
-      <Button
-        variant="light"
-        className="btn-light-primary fw-medium"
-        onClick={() => navigate("/dashboard")}
-      >
-        Return to Dashboard
-      </Button>
+      <div className="d-flex justify-content-between align-items-center mt-4">
+        <Button
+          variant="light"
+          className="btn-light-primary fw-medium"
+          onClick={() => navigate("/dashboard")}
+        >
+          Return to Dashboard
+        </Button>
+        <Button
+          variant="primary"
+          className="fw-medium px-4"
+          onClick={() => navigate(`/project/${id}/criteria`)}
+        >
+          Start AHP Process (Criteria)
+        </Button>
+      </div>
 
       {/* Edit Project Modal */}
       <Modal show={showEditModal} onHide={handleCloseEditModal} centered>
