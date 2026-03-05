@@ -311,7 +311,7 @@ function ResultPage() {
           </Accordion>
 
           {/* Navigation Buttons */}
-          <div className="d-flex justify-content-start align-items-center mt-4 pt-3 border-top border-light">
+          <div className="d-grid gap-3 d-md-flex justify-content-md-start mt-4 pt-3 border-top border-light">
             <Button
               variant="light"
               className="btn-light-secondary fw-medium"

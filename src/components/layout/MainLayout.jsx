@@ -7,7 +7,7 @@ function MainLayout({ children, title }) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "var(--bg-body)", overflow: "hidden" }}>
+    <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "var(--bg-body)" }}>
       <Sidebar isOpen={isMobileSidebarOpen} onClose={() => setIsMobileSidebarOpen(false)} />
 
       {/* Mobile overlay for open sidebar */}

@@ -201,7 +201,7 @@ function ProjectDetail() {
         ))}
       </Row>
 
-      <div className="d-flex justify-content-between align-items-center mt-4">
+      <div className="d-grid gap-3 d-md-flex justify-content-md-between mt-4">
         <Button
           variant="light"
           className="btn-light-primary fw-medium"

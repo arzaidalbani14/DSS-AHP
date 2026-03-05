@@ -127,17 +127,17 @@ function CompareCriteria() {
             </Card>
           )}
 
-          <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-light">
+          <div className="d-grid gap-3 d-md-flex justify-content-md-between mt-4 pt-3 border-top border-light">
             <Button
               variant="light"
-              className="btn-light-secondary fw-medium"
+              className="btn-light-secondary fw-medium order-2 order-md-1"
               onClick={() => navigate(`/project/${projectId}/alternatives`)}
             >
               Back to Alternatives
             </Button>
-            <div className="d-flex gap-3 align-items-center">
+            <div className="d-grid gap-3 d-md-flex align-items-md-center justify-content-md-end order-1 order-md-2">
               {!isConsistent && criteriaConsistency && (
-                <Alert variant="danger" className="mb-0 py-2 px-3">
+                <Alert variant="danger" className="mb-0 py-2 px-3 text-center">
                   Comparison is inconsistent. Please reassign the values.
                 </Alert>
               )}

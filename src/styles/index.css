@@ -369,7 +369,6 @@
 
 .step-card {
   background-color: var(--primary-color-subtle);
-  color: #e2e8f0;
   transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s;
 }
 
@@ -448,6 +447,11 @@ h6 {
   border-color: var(--primary-hover);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
+}
+
+.btn-light-primary,
+.btn-light-secondary {
+  color: var(--text-main) !important;
 }
 
 .card {

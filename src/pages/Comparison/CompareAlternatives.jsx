@@ -141,19 +141,19 @@ function CompareAlternatives() {
               </Card.Body>
             </Card>
 
-            <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-light">
+            <div className="d-grid gap-3 d-md-flex justify-content-md-between mt-4 pt-3 border-top border-light">
               <Button
                 variant="light"
-                className="btn-light-secondary fw-medium"
+                className="btn-light-secondary fw-medium order-2 order-md-1"
                 onClick={() => navigate(`/project/${projectId}/compare-criteria`)}
               >
                 Back to Compare Criteria
               </Button>
-              <div className="d-flex gap-2">
-                <Button variant="outline-secondary" onClick={handlePrev} disabled={isFirst}>
+              <div className="d-grid gap-3 d-md-flex align-items-md-center justify-content-md-end order-1 order-md-2">
+                <Button variant="outline-secondary" className="order-2 order-md-1" onClick={handlePrev} disabled={isFirst}>
                   Previous Step
                 </Button>
-                <Button variant="primary" className="fw-medium px-4" onClick={handleNext}>
+                <Button variant="primary" className="fw-medium px-4 order-1 order-md-2" onClick={handleNext}>
                   {isLast ? "Next: Result" : "Next Step"}
                 </Button>
               </div>

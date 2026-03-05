@@ -99,7 +99,7 @@ function CriteriaPage() {
           <ListGroup variant="flush">
             {criteria.map((c, index) => (
               <ListGroup.Item key={c.id} className="d-flex align-items-center gap-2">
-                <span className="text-muted me-2">{index + 1}.</span>
+                <span className="text-muted text-end me-2" style={{ width: "24px", display: "inline-block" }}>{index + 1}.</span>
                 {editingId === c.id ? (
                   <>
                     <Form.Control
@@ -134,7 +134,7 @@ function CriteriaPage() {
       )}
 
       {/* Navigation Buttons */}
-      <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-light">
+      <div className="d-grid gap-3 d-md-flex justify-content-md-between mt-4 pt-3 border-top border-light">
         <Button
           variant="light"
           className="btn-light-secondary fw-medium"
