@@ -3,10 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Form, Button, Card, ListGroup, InputGroup } from "react-bootstrap";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
+import { useLanguage } from "../../store/LanguageContext";
 
 function AlternativesPage() {
   const { id: projectId } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const project = useDecisionStore((s) => s.getProjectById(projectId));
   const setProjectAlternatives = useDecisionStore((s) => s.setProjectAlternatives);
@@ -58,15 +60,15 @@ function AlternativesPage() {
 
   if (!project) {
     return (
-      <MainLayout title="Alternatives">
+      <MainLayout title={t("alternatives")}>
         <p className="text-muted">Project not found.</p>
       </MainLayout>
     );
   }
 
   return (
-    <MainLayout title="Alternatives">
-      <h2 className="mb-4">List of Alternatives</h2>
+    <MainLayout title={t("alternatives")}>
+      <h2 className="mb-4">{t("alternatives")} {t("results")}</h2>
 
       {/* Add Alternative Form */}
       <Card className="mb-4">
@@ -75,12 +77,12 @@ function AlternativesPage() {
             <InputGroup>
               <Form.Control
                 type="text"
-                placeholder="Alternative name (for example: Laptop A)"
+                placeholder={t("alternativeName") + " (for example: Laptop A)"}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
               <Button variant="primary" type="submit">
-                Add
+                {t("addAlternative")}
               </Button>
             </InputGroup>
           </Form>
@@ -91,7 +93,7 @@ function AlternativesPage() {
       {alternatives.length === 0 ? (
         <Card className="text-center py-4 glass-card-empty" style={{ border: "2px dashed #cbd5e1" }}>
           <Card.Body>
-            <p className="text-muted mb-0">No alternative, add alternative first.</p>
+            <p className="text-muted mb-0">{t("noAlternatives")}</p>
           </Card.Body>
         </Card>
       ) : (
@@ -110,20 +112,20 @@ function AlternativesPage() {
                       className="flex-grow-1"
                     />
                     <Button size="sm" variant="success" onClick={() => handleEditSave(alt.id)}>
-                      Save
+                      {t("save")}
                     </Button>
                     <Button size="sm" variant="outline-secondary" onClick={handleEditCancel}>
-                      Cancel
+                      {t("cancel")}
                     </Button>
                   </>
                 ) : (
                   <>
                     <span className="flex-grow-1">{alt.name}</span>
                     <Button size="sm" variant="outline-primary" onClick={() => handleEditStart(alt)}>
-                      Edit
+                      {t("edit")}
                     </Button>
                     <Button size="sm" variant="outline-danger" onClick={() => handleDelete(alt.id)}>
-                      Delete
+                      {t("delete")}
                     </Button>
                   </>
                 )}
@@ -140,7 +142,7 @@ function AlternativesPage() {
           className="btn-light-secondary fw-medium"
           onClick={() => navigate(`/project/${projectId}/criteria`)}
         >
-          Back to Criteria
+          Back to {t("criteria")}
         </Button>
         <Button
           variant="primary"
@@ -148,7 +150,7 @@ function AlternativesPage() {
           disabled={project?.criteria?.length < 2 || alternatives.length === 0}
           onClick={() => navigate(`/project/${projectId}/compare-criteria`)}
         >
-          Next: Compare Criteria
+          {t("compareCriteria")}
         </Button>
       </div>
     </MainLayout>

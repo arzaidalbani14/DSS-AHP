@@ -2,17 +2,19 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../store/AuthContext";
+import { useLanguage } from "../../store/LanguageContext";
 import SettingsSidebar from "../../components/layout/SettingsSidebar";
 
 function Landing() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { t } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const navLinks = [
-    { name: "Login", href: "/login" },
-    { name: "About", href: "#about" },
+    { name: t("login"), href: "/login" },
+    { name: t("about"), href: "#about" },
   ];
 
   return (
@@ -281,7 +283,7 @@ function Landing() {
                       cursor: "pointer",
                     }}
                   >
-                    Dashboard
+                    {t("dashboard")}
                   </motion.button>
                 </li>
               </ul>
@@ -317,7 +319,7 @@ function Landing() {
               WebkitTextFillColor: "transparent",
             }}
           >
-            DECISION SUPPORT SYSTEM
+            {t("decisionSupportSystem")}
           </h1>
 
           <p
@@ -329,9 +331,9 @@ function Landing() {
               lineHeight: "1.6",
             }}
           >
-            Professional Decision Support System Based on <br />
+            {t("professionalDecisionSupport")} <br />
             <strong style={{ color: "var(--primary-color)" }}>
-              Analytic Hierarchy Process
+              {t("analyticHierarchyProcess")}
             </strong>
           </p>
 
@@ -355,7 +357,7 @@ function Landing() {
               letterSpacing: "0.5px",
             }}
           >
-            Go to Dashboard
+            {t("goToDashboard")}
           </motion.button>
 
           <div

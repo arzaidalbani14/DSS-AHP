@@ -1,12 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, NavLink, useParams, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import useDecisionStore from "../../store/decisionStore";
 import { useAuth } from "../../store/AuthContext";
 import { useTheme } from "../../store/ThemeContext";
+import { useLanguage } from "../../store/LanguageContext";
 
 function Sidebar({ isOpen, onClose }) {
   const { id: projectId } = useParams();
   const navigate = useNavigate();
+  const { t, language, changeLanguage } = useLanguage();
+  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+
+  const languages = [
+    { code: "en", name: "English" },
+    { code: "id", name: "Bahasa Indonesia" },
+  ];
 
   // Get project-specific data
   const project = useDecisionStore((s) => s.getProjectById(projectId));
@@ -26,28 +35,28 @@ function Sidebar({ isOpen, onClose }) {
 
   const ahpMenu = [
     {
-      label: "Overview",
+      label: t("overview"),
       path: `/project/${projectId}`,
       enabled: true,
       end: true, // Exact match only
     },
     {
-      label: "Criteria",
+      label: t("criteria"),
       path: `/project/${projectId}/criteria`,
       enabled: true,
     },
     {
-      label: "Alternatives",
+      label: t("alternatives"),
       path: `/project/${projectId}/alternatives`,
       enabled: criteria.length >= 1,
     },
     {
-      label: "Compare Criteria",
+      label: t("compareCriteria"),
       path: `/project/${projectId}/compare-criteria`,
       enabled: criteria.length >= 2,
     },
     {
-      label: "Compare Alternatives",
+      label: t("compareAlternatives"),
       path: `/project/${projectId}/compare-alternatives`,
       enabled:
         criteria.length >= 1 &&
@@ -55,7 +64,7 @@ function Sidebar({ isOpen, onClose }) {
         criteriaWeights.length === criteria.length,
     },
     {
-      label: "Result",
+      label: t("results"),
       path: `/project/${projectId}/result`,
       enabled: finalResult.length > 0,
     },
@@ -68,7 +77,7 @@ function Sidebar({ isOpen, onClose }) {
           <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: "800", letterSpacing: "0.5px", color: "white" }}>
             DSS <span style={{ color: "var(--primary-color)" }}>AHP</span>
           </h2>
-          <small style={{ color: "#64748b", fontSize: "0.75rem", display: "block" }}>Decision Support</small>
+          <small style={{ color: "#64748b", fontSize: "0.75rem", display: "block" }}>{t("decisionSupport")}</small>
         </Link>
         <button
           className="d-md-none"
@@ -83,14 +92,14 @@ function Sidebar({ isOpen, onClose }) {
         {/* ===== GLOBAL MENU ===== */}
         <div style={{ marginBottom: "24px" }}>
           <small style={{ color: "#475569", textTransform: "uppercase", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "1px", display: "block", marginBottom: "8px" }}>
-            Main
+            {t("main")}
           </small>
           <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
             <NavLink to="/dashboard" style={navStyle} onClick={onClose}>
-              Dashboard
+              {t("dashboard")}
             </NavLink>
             <NavLink to="/project/new" style={navStyle} onClick={onClose}>
-              New Project
+              {t("createNewProject")}
             </NavLink>
           </nav>
         </div>
@@ -98,7 +107,7 @@ function Sidebar({ isOpen, onClose }) {
         {/* ===== AHP FLOW ===== */}
         <div>
           <small style={{ color: "#475569", textTransform: "uppercase", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "1px", display: "block", marginBottom: "8px" }}>
-            Project Workflow
+            {t("workflow")}
           </small>
           <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
             {ahpMenu.map((item) => {
@@ -117,7 +126,7 @@ function Sidebar({ isOpen, onClose }) {
                 <div
                   key={item.label}
                   style={disabledStyle}
-                  title={!showAhpMenu ? "Select a project first" : "Complete the previous step"}
+                  title={!showAhpMenu ? t("selectProjectFirst") : t("completePreviousStep")}
                 >
                   {item.label}
                 </div>
@@ -130,8 +139,56 @@ function Sidebar({ isOpen, onClose }) {
       {/* Mobile Settings Block */}
       <div className="d-md-none" style={{ padding: "16px", borderTop: "1px solid #1e293b" }}>
         <small style={{ color: "#475569", textTransform: "uppercase", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "1px", display: "block", marginBottom: "8px" }}>
-          Settings
+          {t("settings")}
         </small>
+        <div 
+          className="mobile-settings-item" 
+          onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 500, fontSize: "0.9rem" }}>{t("language")}</div>
+              <div style={{ fontSize: "0.8rem", color: "#64748b" }}>{languages.find(l => l.code === language)?.name || "English"}</div>
+            </div>
+            <span style={{ color: "#94a3b8", fontSize: "1rem" }}>›</span>
+          </div>
+        </div>
+        
+        <AnimatePresence>
+          {showLanguageMenu && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              style={{ overflow: "hidden", marginBottom: "8px" }}
+            >
+              {languages.map((lang) => (
+                <div
+                  key={lang.code}
+                  onClick={() => {
+                    changeLanguage(lang.code);
+                    setShowLanguageMenu(false);
+                    onClose();
+                  }}
+                  style={{
+                    padding: "10px 16px 10px 44px",
+                    cursor: "pointer",
+                    background: language === lang.code ? "var(--primary-color)" : "transparent",
+                    color: language === lang.code ? "#fff" : "#94a3b8",
+                    borderRadius: "8px",
+                    marginBottom: "4px",
+                    fontSize: "0.9rem",
+                    fontWeight: language === lang.code ? 600 : 400,
+                  }}
+                >
+                  {lang.name}
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="mobile-settings-item" onClick={() => { toggleTheme(); onClose(); }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%" }}>
             {isDark ? (
@@ -139,13 +196,16 @@ function Sidebar({ isOpen, onClose }) {
             ) : (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
             )}
-            <span>Switch to {isDark ? "Light" : "Dark"} Mode</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 500, fontSize: "0.9rem" }}>{t("theme")}</div>
+              <div style={{ fontSize: "0.8rem", color: "#64748b" }}>{isDark ? t("dark") : t("light")}</div>
+            </div>
           </div>
         </div>
         <div className="mobile-settings-item" onClick={() => { logout(); onClose(); navigate("/"); }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%" }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
-            <span>Logout</span>
+            <span>{t("logout")}</span>
           </div>
         </div>
       </div>

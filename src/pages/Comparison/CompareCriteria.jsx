@@ -7,6 +7,7 @@ import ConsistencyBadge from "../../components/ahp/ConsistencyBadge";
 import ConsistencyDetail from "../../components/ahp/ConsistencyDetail";
 
 import useDecisionStore from "../../store/decisionStore";
+import { useLanguage } from "../../store/LanguageContext";
 import { createInitialMatrix } from "../../utils/matrixUtils";
 
 import {
@@ -21,6 +22,7 @@ import {
 function CompareCriteria() {
   const { id: projectId } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const project = useDecisionStore((s) => s.getProjectById(projectId));
   const setProjectPairwiseCriteria = useDecisionStore((s) => s.setProjectPairwiseCriteria);
@@ -86,7 +88,7 @@ function CompareCriteria() {
 
   if (!project) {
     return (
-      <MainLayout title="Compare Criteria">
+      <MainLayout title={t("compareCriteria")}>
         <p className="text-muted">Project not found.</p>
       </MainLayout>
     );
@@ -95,12 +97,12 @@ function CompareCriteria() {
   const isConsistent = criteriaConsistency && criteriaConsistency.cr <= 0.1;
 
   return (
-    <MainLayout title="Compare Criteria">
-      <h2 className="mb-4">Compare Criteria</h2>
+    <MainLayout title={t("compareCriteria")}>
+      <h2 className="mb-4">{t("compareCriteria")}</h2>
 
       {criteria.length < 2 ? (
         <Alert variant="warning">
-          Add at least 2 criteria to start compare.
+          {t("minRequired")} {t("criteria")}.
         </Alert>
       ) : (
         <>
@@ -133,12 +135,12 @@ function CompareCriteria() {
               className="btn-light-secondary fw-medium order-2 order-md-1"
               onClick={() => navigate(`/project/${projectId}/alternatives`)}
             >
-              Back to Alternatives
+              {t("backTo")} {t("alternatives")}
             </Button>
             <div className="d-grid gap-3 d-md-flex align-items-md-center justify-content-md-end order-1 order-md-2">
               {!isConsistent && criteriaConsistency && (
                 <Alert variant="danger" className="mb-0 py-2 px-3 text-center">
-                  Comparison is inconsistent. Please reassign the values.
+                  {t("inconsistent")}
                 </Alert>
               )}
               <Button
@@ -147,7 +149,7 @@ function CompareCriteria() {
                 disabled={!isConsistent}
                 onClick={() => navigate(`/project/${projectId}/compare-alternatives`)}
               >
-                Next: Compare Alternatives
+                {t("compareAlternatives")}
               </Button>
             </div>
           </div>

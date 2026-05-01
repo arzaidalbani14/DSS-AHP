@@ -4,10 +4,12 @@ import { Card, Badge, Row, Col, Button, Modal, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
+import { useLanguage } from "../../store/LanguageContext";
 
 function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const project = useDecisionStore((s) => s.getProjectById(id));
   const setCurrentProjectId = useDecisionStore((s) => s.setCurrentProjectId);
@@ -50,7 +52,7 @@ function ProjectDetail() {
 
   const handleSaveEdit = () => {
     if (!editName.trim()) {
-      toast.error("Project name cannot be empty");
+      toast.error(t("projectName") + " " + t("cannotBeEmpty") || "cannot be empty");
       return;
     }
 
@@ -60,22 +62,22 @@ function ProjectDetail() {
       updatedAt: new Date().toISOString().slice(0, 10),
     });
 
-    toast.success("Project updated successfully");
+    toast.success(t("projectUpdated"));
     setShowEditModal(false);
   };
 
   // Not found state
   if (!project) {
     return (
-      <MainLayout title="Project Not Found">
+      <MainLayout title={t("projectNotFound")}>
         <Card className="text-center py-5">
           <Card.Body>
-            <h4>Project not Found</h4>
+            <h4>{t("projectNotFound")}</h4>
             <p className="text-muted mb-3">
-              Project with id "{id}" does not exist or has been deleted.
+              {t("projectNotFoundDesc")}
             </p>
             <Button variant="primary" onClick={() => navigate("/dashboard")}>
-              Return to Dashboard
+              {t("backToDashboard")}
             </Button>
           </Card.Body>
         </Card>
@@ -93,11 +95,11 @@ function ProjectDetail() {
   const getStatusBadge = (status) => {
     switch (status) {
       case "draft":
-        return <Badge bg="secondary">Draft</Badge>;
+        return <Badge bg="secondary">{t("draft")}</Badge>;
       case "progress":
-        return <Badge bg="primary">In Progress</Badge>;
+        return <Badge bg="primary">{t("inProgress")}</Badge>;
       case "completed":
-        return <Badge bg="success">Completed</Badge>;
+        return <Badge bg="success">{t("completed")}</Badge>;
       default:
         return <Badge bg="light" text="dark">-</Badge>;
     }
@@ -107,35 +109,35 @@ function ProjectDetail() {
   // "done" = has valid data AND prerequisites are met
   const steps = [
     {
-      label: "1. Criteria",
+      label: "1. " + t("criteria"),
       path: `/project/${id}/criteria`,
       done: criteria.length > 0,
       enabled: true, // Always accessible
-      desc: `${criteria.length} criteria`,
+      desc: `${criteria.length} ${t("criteria").toLowerCase()}`,
     },
     {
-      label: "2. Alternatives",
+      label: "2. " + t("alternatives"),
       path: `/project/${id}/alternatives`,
       done: criteria.length >= 1 && alternatives.length > 0, // Done only if criteria exists
       enabled: criteria.length >= 1,
-      desc: `${alternatives.length} alternative${alternatives.length != 1 ? 's' : ''}`,
+      desc: `${alternatives.length} ${t("alternatives").toLowerCase()}`,
     },
     {
-      label: "3. Compare Criteria",
+      label: "3. " + t("compareCriteria"),
       path: `/project/${id}/compare-criteria`,
       done: criteria.length >= 2 && criteriaWeights.length > 0 && criteriaWeights.length === criteria.length,
       enabled: criteria.length >= 2,
-      desc: (criteria.length >= 2 && criteriaWeights.length === criteria.length) ? "Completed" : "Unfinished",
+      desc: (criteria.length >= 2 && criteriaWeights.length === criteria.length) ? t("completed") : t("unfinished"),
     },
     {
-      label: "4. Compare Alternatives",
+      label: "4. " + t("compareAlternatives"),
       path: `/project/${id}/compare-alternatives`,
       done: criteria.length >= 1 && alternatives.length >= 2 && criteriaWeights.length === criteria.length && Object.keys(alternativeWeights || {}).length > 0,
       enabled: criteria.length >= 1 && alternatives.length >= 2 && criteriaWeights.length === criteria.length,
-      desc: "Per Criteria",
+      desc: t("per") + " " + t("criteria").toLowerCase(),
     },
     {
-      label: "5. Result",
+      label: "5. " + t("results"),
       path: `/project/${id}/result`,
       done: criteria.length >= 1 && alternatives.length >= 2 && finalResult.length > 0,
       enabled: (
@@ -144,7 +146,7 @@ function ProjectDetail() {
         criteriaWeights.length === criteria.length &&
         Object.keys(alternativeWeights || {}).length > 0
       ) || finalResult.length > 0,
-      desc: finalResult.length > 0 ? "Ready" : "Unfinished",
+      desc: finalResult.length > 0 ? t("ready") : t("unfinished"),
     },
   ];
 
@@ -157,7 +159,7 @@ function ProjectDetail() {
             <div>
               <h3 className="mb-2">{project.name}</h3>
               <p className="text-muted mb-0">
-                {project.description || "No Description"}
+                {project.description || t("noDescription")}
               </p>
             </div>
             <div className="d-flex flex-column align-items-end gap-2">
@@ -167,18 +169,18 @@ function ProjectDetail() {
                 size="sm"
                 onClick={handleOpenEditModal}
               >
-                Edit Project
+                {t("edit") + " " + t("project").toLowerCase()}
               </Button>
             </div>
           </div>
           <small className="text-muted d-block mt-3">
-            Created at: {project.createdAt} | Updated at: {project.updatedAt}
+            {t("createdAt")}: {project.createdAt} | {t("updatedAt")}: {project.updatedAt}
           </small>
         </Card.Body>
       </Card>
 
       {/* AHP Flow Steps */}
-      <h5 className="mb-3">Steps of AHP</h5>
+      <h5 className="mb-3">{t("ahpSteps")}</h5>
       <Row className="g-3 mb-4">
         {steps.map((step) => (
           <Col key={step.path} xs={12} sm={6} md={4} lg={3}>
@@ -207,51 +209,51 @@ function ProjectDetail() {
           className="btn-light-primary fw-medium"
           onClick={() => navigate("/dashboard")}
         >
-          Return to Dashboard
+          {t("backToDashboard")}
         </Button>
         <Button
           variant="primary"
           className="fw-medium px-4"
           onClick={() => navigate(`/project/${id}/criteria`)}
         >
-          Start AHP Process (Criteria)
+          {t("startAhp")} ({t("criteria")})
         </Button>
       </div>
 
       {/* Edit Project Modal */}
       <Modal show={showEditModal} onHide={handleCloseEditModal} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Edit Project</Modal.Title>
+          <Modal.Title>{t("edit") + " " + t("project")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>Project Name</Form.Label>
+              <Form.Label>{t("projectName")}</Form.Label>
               <Form.Control
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                placeholder="Enter project name"
+                placeholder={t("projectNamePlaceholder")}
               />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Description</Form.Label>
+              <Form.Label>{t("projectDescription")}</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
-                placeholder="Enter project description (optional)"
+                placeholder={t("projectDescriptionPlaceholder")}
               />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="outline-secondary" onClick={handleCloseEditModal}>
-            Cancel
+            {t("cancel")}
           </Button>
           <Button variant="primary" onClick={handleSaveEdit}>
-            Save
+            {t("save")}
           </Button>
         </Modal.Footer>
       </Modal>

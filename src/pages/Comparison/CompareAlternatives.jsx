@@ -4,6 +4,7 @@ import { Card, Button, Alert } from "react-bootstrap";
 import MainLayout from "../../components/layout/MainLayout";
 import PairwiseMatrix from "../../components/ahp/PairwiseMatrix";
 import useDecisionStore from "../../store/decisionStore";
+import { useLanguage } from "../../store/LanguageContext";
 import { createInitialMatrix } from "../../utils/matrixUtils";
 
 import {
@@ -18,6 +19,7 @@ import {
 function CompareAlternatives() {
   const { id: projectId } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const project = useDecisionStore((s) => s.getProjectById(projectId));
   const setProjectPairwiseAlternatives = useDecisionStore((s) => s.setProjectPairwiseAlternatives);
@@ -62,7 +64,7 @@ function CompareAlternatives() {
 
   if (!project) {
     return (
-      <MainLayout title="Compare Alternatives">
+      <MainLayout title={t("compareAlternatives")}>
         <p className="text-muted">Project not found.</p>
       </MainLayout>
     );
@@ -70,7 +72,7 @@ function CompareAlternatives() {
 
   if (!currentCriteria) {
     return (
-      <MainLayout title="Compare Alternatives">
+      <MainLayout title={t("compareAlternatives")}>
         <Alert variant="success">All criteria has been processed.</Alert>
         <Button variant="outline-primary" onClick={() => updateProjectAhpData(projectId, "currentCriteriaIndex", 0)}>
           Start new from the first criteria
@@ -118,15 +120,15 @@ function CompareAlternatives() {
   const isLast = currentCriteriaIndex === criteriaCount - 1;
 
   return (
-    <MainLayout title="Compare Alternatives">
-      <h2 className="mb-2">Compare Alternatives</h2>
+    <MainLayout title={t("compareAlternatives")}>
+      <h2 className="mb-2">{t("compareAlternatives")}</h2>
       <p className="text-muted mb-4" style={{ fontSize: "18px" }}>
-        Criteria: <strong>{currentCriteria.name}</strong> ({currentCriteriaIndex + 1} dari {criteriaCount})
+        {t("criteria")}: <strong>{currentCriteria.name}</strong> ({currentCriteriaIndex + 1} {t("of")} {criteriaCount})
       </p>
 
       {
         altCount < 2 ? (
-          <Alert variant="warning">Add at least 2 alternatives.</Alert>
+          <Alert variant="warning">{t("minRequired")} {t("alternatives")}.</Alert>
         ) : (
           <>
             <Card className="mb-4">
@@ -147,14 +149,14 @@ function CompareAlternatives() {
                 className="btn-light-secondary fw-medium order-2 order-md-1"
                 onClick={() => navigate(`/project/${projectId}/compare-criteria`)}
               >
-                Back to Compare Criteria
+                {t("backTo")} {t("compareCriteria")}
               </Button>
               <div className="d-grid gap-3 d-md-flex align-items-md-center justify-content-md-end order-1 order-md-2">
                 <Button variant="outline-secondary" className="order-2 order-md-1" onClick={handlePrev} disabled={isFirst}>
-                  Previous Step
+                  {t("previousCriteria")}
                 </Button>
                 <Button variant="primary" className="fw-medium px-4 order-1 order-md-2" onClick={handleNext}>
-                  {isLast ? "Next: Result" : "Next Step"}
+                  {isLast ? t("viewResults") : t("nextCriteria")}
                 </Button>
               </div>
             </div>

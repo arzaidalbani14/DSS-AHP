@@ -4,11 +4,13 @@ import { Form, Button, Card } from "react-bootstrap";
 import { toast } from "react-toastify";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
+import { useLanguage } from "../../store/LanguageContext";
 
 function ProjectCreate() {
   const navigate = useNavigate();
   const addProject = useDecisionStore((s) => s.addProject);
   const setCurrentProjectId = useDecisionStore((s) => s.setCurrentProjectId);
+  const { t } = useLanguage();
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -17,7 +19,7 @@ function ProjectCreate() {
     e.preventDefault();
 
     if (!name.trim()) {
-      toast.error("Project name is required");
+      toast.error(t("projectName") + " " + t("status").toLowerCase() + " " + t("isRequired") || "is required");
       return;
     }
 
@@ -36,52 +38,52 @@ function ProjectCreate() {
     addProject(newProject);
     setCurrentProjectId(projectId);
 
-    toast.success(`Project "${name.trim()}" has been created!`);
+    toast.success(`Project "${name.trim()}" ` + t("hasBeenCreated") + "!");
     navigate(`/project/${projectId}`);
   };
 
   return (
-    <MainLayout title="New Project">
+    <MainLayout title={t("createNewProject")}>
       <div style={{ maxWidth: "600px" }}>
-        <h2 className="mb-2">Create New Decision Project</h2>
+        <h2 className="mb-2">{t("createNewProject")}</h2>
         <p className="text-muted mb-4">
-          Determine the decision problem to solve using AHP
+          {t("determineDecision")}
         </p>
 
         <Card>
           <Card.Body>
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
-                <Form.Label>Project Name<span style={{ color: "#fa3636ff" }}>*</span></Form.Label>
+                <Form.Label>{t("projectName")}<span style={{ color: "#fa3636ff" }}>*</span></Form.Label>
                 <Form.Control
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="For example: Choosing Laptop"
+                  placeholder={t("exampleProject")}
                 />
               </Form.Group>
 
               <Form.Group className="mb-4">
-                <Form.Label>Description (optional)</Form.Label>
+                <Form.Label>{t("projectDescription")} ({t("optional")})</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Explain the decision purpose in short"
+                  placeholder={t("exampleDescription")}
                 />
               </Form.Group>
 
               <div className="d-flex gap-2">
                 <Button variant="primary" type="submit">
-                  Create Project
+                  {t("createNewProject")}
                 </Button>
                 <Button
                   variant="outline-secondary"
                   type="button"
                   onClick={() => navigate("/dashboard")}
                 >
-                  Cancel
+                  {t("cancel")}
                 </Button>
               </div>
             </Form>

@@ -1,13 +1,16 @@
 import React, { useEffect, useRef, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Card, Table, Alert, Accordion } from "react-bootstrap";
 import { toast } from "react-toastify";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
+import { useLanguage } from "../../store/LanguageContext";
 import { aggregateResults } from "../../services/ahpService";
 
 function ResultPage() {
   const { id: projectId } = useParams();
+  const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const project = useDecisionStore((s) => s.getProjectById(projectId));
   const setProjectFinalResult = useDecisionStore((s) => s.setProjectFinalResult);
@@ -82,9 +85,9 @@ function ResultPage() {
     }
   }, [computedResult]);
 
-  if (!project) {
+if (!project) {
     return (
-      <MainLayout title="Result">
+      <MainLayout title={t("finalResult")}>
         <p className="text-muted">Project not found.</p>
       </MainLayout>
     );
@@ -96,11 +99,11 @@ function ResultPage() {
   // Error messages
   let message = null;
   if (criteria.length < 1) {
-    message = "No criteria have been defined.";
+    message = "No " + t("criteria") + " have been defined.";
   } else if (alternatives.length < 1) {
-    message = "No alternatives have been added.";
+    message = "No " + t("alternatives") + " have been added.";
   } else if (criteriaWeights.length !== criteria.length) {
-    message = "Criteria comparison is not yet complete.";
+    message = t("criteria") + " comparison is not yet complete.";
   } else {
     const incompleteAlt = criteria.find(
       (c) =>
@@ -108,7 +111,7 @@ function ResultPage() {
         alternativeWeights[c.id].weights?.length !== alternatives.length
     );
     if (incompleteAlt) {
-      message = `Alternative comparison for criterion "${incompleteAlt.name}" is not yet complete.`;
+      message = t("alternative") + " comparison for criterion \"" + incompleteAlt.name + "\" is not yet complete.";
     }
   }
 
@@ -121,8 +124,8 @@ function ResultPage() {
   };
 
   return (
-    <MainLayout title="Result">
-      <h2 className="mb-4">Final Result &amp; Rank</h2>
+    <MainLayout title={t("finalResult")}>
+      <h2 className="mb-4">{t("finalResult")} &amp; {t("rank")}</h2>
 
       {finalResult.length === 0 ? (
         <Alert variant="warning">{message}</Alert>
@@ -130,19 +133,19 @@ function ResultPage() {
         <>
           {/* Best Recommendation */}
           <Alert variant="success" className="mb-4">
-            <strong>Best Recommendation:</strong> {best.name} (Score: {best.score.toFixed(4)})
+            <strong>{t("bestAlternative")}:</strong> {best.name} (Score: {best.score.toFixed(4)})
           </Alert>
 
           {/* Ranking Table */}
           <Card className="mb-4">
             <Card.Header>
-              <strong>Ranking Based on Preference Values</strong>
+              <strong>{t("rank")} Based on Preference Values</strong>
             </Card.Header>
             <Table hover className="mb-0">
               <thead className="table-light">
                 <tr>
-                  <th>Rank</th>
-                  <th>Alternative</th>
+                  <th>{t("rank")}</th>
+                  <th>{t("alternatives")}</th>
                   <th>Preference Value</th>
                 </tr>
               </thead>
@@ -165,7 +168,7 @@ function ResultPage() {
             {/* Criteria Weights */}
             <Accordion.Item eventKey="0">
               <Accordion.Header>
-                Criteria Weight
+                {t("priorityWeight")}
               </Accordion.Header>
               <Accordion.Body>
                 <p className="text-muted mb-3">
@@ -210,7 +213,7 @@ function ResultPage() {
             {/* Alternative Weights per Criteria */}
             <Accordion.Item eventKey="1">
               <Accordion.Header>
-                Alternative Weight each Criteria
+                {t("alternatives")} {t("priorityWeight")} each {t("criteria")}
               </Accordion.Header>
               <Accordion.Body>
                 <p className="text-muted mb-3">
@@ -317,7 +320,7 @@ function ResultPage() {
               className="btn-light-secondary fw-medium"
               onClick={() => navigate(`/project/${projectId}/compare-alternatives`)}
             >
-              Back to Compare Alternatives
+              Back to {t("compareAlternatives")}
             </Button>
           </div>
         </>

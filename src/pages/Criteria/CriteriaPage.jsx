@@ -3,10 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Form, Button, Card, ListGroup, InputGroup } from "react-bootstrap";
 import MainLayout from "../../components/layout/MainLayout";
 import useDecisionStore from "../../store/decisionStore";
+import { useLanguage } from "../../store/LanguageContext";
 
 function CriteriaPage() {
   const { id: projectId } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const project = useDecisionStore((s) => s.getProjectById(projectId));
   const setProjectCriteria = useDecisionStore((s) => s.setProjectCriteria);
@@ -58,15 +60,15 @@ function CriteriaPage() {
 
   if (!project) {
     return (
-      <MainLayout title="Criteria">
+      <MainLayout title={t("criteria")}>
         <p className="text-muted">Project not found.</p>
       </MainLayout>
     );
   }
 
   return (
-    <MainLayout title="Criteria">
-      <h2 className="mb-4">Criteria Management</h2>
+    <MainLayout title={t("criteria")}>
+      <h2 className="mb-4">{t("criteria")} {t("results")}</h2>
 
       {/* Add Criteria Form */}
       <Card className="mb-4">
@@ -75,12 +77,12 @@ function CriteriaPage() {
             <InputGroup>
               <Form.Control
                 type="text"
-                placeholder="Criteria name (for example: Price)"
+                placeholder={t("criteriaName") + " (for example: Price)"}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
               <Button variant="primary" type="submit">
-                Add
+                {t("addCriteria")}
               </Button>
             </InputGroup>
           </Form>
@@ -91,7 +93,7 @@ function CriteriaPage() {
       {criteria.length === 0 ? (
         <Card className="text-center py-4 glass-card-empty" style={{ border: "2px dashed #cbd5e1" }}>
           <Card.Body>
-            <p className="text-muted mb-0">No criteria, please add criteria first.</p>
+            <p className="text-muted mb-0">{t("noCriteria")}</p>
           </Card.Body>
         </Card>
       ) : (
@@ -110,20 +112,20 @@ function CriteriaPage() {
                       className="flex-grow-1"
                     />
                     <Button size="sm" variant="success" onClick={() => handleEditSave(c.id)}>
-                      Save
+                      {t("save")}
                     </Button>
                     <Button size="sm" variant="outline-secondary" onClick={handleEditCancel}>
-                      Cancel
+                      {t("cancel")}
                     </Button>
                   </>
                 ) : (
                   <>
                     <span className="flex-grow-1">{c.name}</span>
                     <Button size="sm" variant="outline-primary" onClick={() => handleEditStart(c)}>
-                      Edit
+                      {t("edit")}
                     </Button>
                     <Button size="sm" variant="outline-danger" onClick={() => handleDelete(c.id)}>
-                      Delete
+                      {t("delete")}
                     </Button>
                   </>
                 )}
@@ -140,7 +142,7 @@ function CriteriaPage() {
           className="btn-light-secondary fw-medium"
           onClick={() => navigate(`/project/${projectId}`)}
         >
-          Back to Overview
+          {t("backToOverview")}
         </Button>
         <Button
           variant="primary"
@@ -148,7 +150,7 @@ function CriteriaPage() {
           disabled={criteria.length === 0}
           onClick={() => navigate(`/project/${projectId}/alternatives`)}
         >
-          Next: Alternatives
+          Next: {t("alternatives")}
         </Button>
       </div>
     </MainLayout>
